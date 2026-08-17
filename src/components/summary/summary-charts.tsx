@@ -17,6 +17,7 @@ import {
 import { CanvasRenderer } from "echarts/renderers";
 
 import type { PeriodSummary } from "@/lib/scoring";
+import { formatTrendLabel } from "@/lib/dates";
 
 registerECharts([
   AriaComponent,
@@ -105,7 +106,7 @@ export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
     tooltip: { trigger: "axis" },
     xAxis: {
       type: "category",
-      data: summary.trends.map((point) => point.label),
+      data: summary.trends.map((point) => formatTrendLabel(point.label)),
       axisLabel: { color: "#64748b", hideOverlap: true },
       axisLine: { lineStyle: { color: "#e2e8f0" } },
     },

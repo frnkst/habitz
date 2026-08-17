@@ -2,6 +2,9 @@ import { describe, expect, it } from "vitest";
 
 import {
   enumerateDates,
+  formatDate,
+  formatPeriodLabel,
+  formatTrendLabel,
   getPeriodRange,
   shiftPeriod,
   todayInTimeZone,
@@ -33,5 +36,31 @@ describe("calendar dates", () => {
     expect(
       enumerateDates({ start: "2026-08-17", end: "2026-08-19" }),
     ).toEqual(["2026-08-17", "2026-08-18", "2026-08-19"]);
+  });
+
+  it("formats human-readable dates in Swiss German", () => {
+    expect(
+      formatDate("2026-08-31", { day: "numeric", month: "long" }),
+    ).toBe("31. August");
+    expect(formatTrendLabel("2026-08-31")).toBe("31.08.2026");
+    expect(formatTrendLabel("2026-08")).toBe("Aug. 2026");
+  });
+
+  it("formats Swiss period labels", () => {
+    expect(
+      formatPeriodLabel(
+        { start: "2026-06-15", end: "2026-06-21" },
+        "week",
+      ),
+    ).toBe("Week 25");
+  });
+
+  it("uses ISO week years at calendar-year boundaries", () => {
+    expect(
+      formatPeriodLabel(
+        { start: "2025-12-29", end: "2026-01-04" },
+        "week",
+      ),
+    ).toBe("Week 1");
   });
 });

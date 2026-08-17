@@ -4,7 +4,6 @@ import type { HabitDefinition } from "@/lib/habits";
 import { getDayCounts, getHabitStatus } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
-import { Progress } from "@/components/ui/progress";
 import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
@@ -14,7 +13,7 @@ import { HabitIcon } from "./habit-icon";
 const cardStyles = {
   open: "border-slate-200/80 bg-white/72 text-slate-500",
   missed: "border-[#ffd6d1] bg-[#fff3f1] text-[#9a3f35]",
-  done: "border-[#173b2d] bg-[#173b2d] text-white shadow-lg shadow-emerald-950/10",
+  done: "border-emerald-200 bg-emerald-100/90 text-emerald-900 shadow-lg shadow-emerald-900/5",
 };
 
 function displayValue(
@@ -70,7 +69,7 @@ export function DayDetail({
           const card = (
             <article
               className={cn(
-                "relative min-w-0 rounded-[1.35rem] border p-3.5 shadow-[0_8px_25px_rgba(23,59,45,0.04)] transition duration-200",
+                "relative h-full min-w-0 rounded-[1.35rem] border p-3.5 shadow-[0_8px_25px_rgba(23,59,45,0.04)] transition duration-200",
                 editable &&
                   "group-hover:-translate-y-0.5 group-hover:shadow-[0_12px_30px_rgba(23,59,45,0.09)]",
                 cardStyles[status],
@@ -91,12 +90,6 @@ export function DayDetail({
               <p className="mt-0.5 text-xs font-medium opacity-70">
                 {displayValue(habit, value)}
               </p>
-              {habit.type === "duration" && typeof value === "number" ? (
-                <Progress
-                  value={Math.min(100, (value / habit.target) * 100)}
-                  className="mt-3 gap-0 [&_[data-slot=progress-track]]:h-1.5 [&_[data-slot=progress-track]]:bg-black/8 [&_[data-slot=progress-indicator]]:bg-current [&_[data-slot=progress-indicator]]:opacity-70"
-                />
-              ) : null}
             </article>
           );
 

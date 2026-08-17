@@ -6,6 +6,7 @@ export type DateRange = {
 };
 
 const dateKeyPattern = /^\d{4}-\d{2}-\d{2}$/;
+const displayLocale = "de-CH";
 
 function dateFromKey(dateKey: string): Date {
   if (!dateKeyPattern.test(dateKey)) {
@@ -123,10 +124,37 @@ export function formatDate(
   dateKey: string,
   options: Intl.DateTimeFormatOptions,
 ): string {
-  return new Intl.DateTimeFormat("en-GB", {
+  return new Intl.DateTimeFormat(displayLocale, {
     timeZone: "UTC",
     ...options,
   }).format(dateFromKey(dateKey));
+}
+
+export function formatTrendLabel(label: string): string {
+  if (/^\d{4}-\d{2}$/.test(label)) {
+    return formatDate(`${label}-01`, {
+      month: "short",
+      year: "numeric",
+    });
+  }
+  if (isDateKey(label)) {
+    return formatDate(label, {
+      day: "2-digit",
+      month: "2-digit",
+      year: "numeric",
+    });
+  }
+  return label;
+}
+
+function getIsoWeek(dateKey: string): number {
+  const date = dateFromKey(dateKey);
+  const weekday = date.getUTCDay() || 7;
+  date.setUTCDate(date.getUTCDate() + 4 - weekday);
+  const yearStart = new Date(Date.UTC(date.getUTCFullYear(), 0, 1));
+  return Math.ceil(
+    ((date.getTime() - yearStart.getTime()) / 86_400_000 + 1) / 7,
+  );
 }
 
 export function formatPeriodLabel(range: DateRange, period: Period): string {
@@ -136,11 +164,5 @@ export function formatPeriodLabel(range: DateRange, period: Period): string {
   if (period === "month") {
     return formatDate(range.start, { month: "long", year: "numeric" });
   }
-  const start = formatDate(range.start, { day: "numeric", month: "short" });
-  const end = formatDate(range.end, {
-    day: "numeric",
-    month: "short",
-    year: "numeric",
-  });
-  return `${start} to ${end}`;
+  return `Week ${getIsoWeek(range.start)}`;
 }

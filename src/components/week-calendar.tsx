@@ -46,21 +46,21 @@ export function WeekCalendar({
             className={cn(
               "group min-w-0 rounded-[1.15rem] border border-white/80 bg-white/65 px-1 py-2 text-center shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-md sm:rounded-2xl sm:p-3",
               isSelected &&
-                "border-[#173b2d] bg-[#173b2d] text-white shadow-lg shadow-emerald-950/15 ring-0 hover:bg-[#173b2d]",
+                "border-violet-200 bg-violet-100/75 text-violet-950 shadow-md shadow-violet-900/5 ring-0 hover:bg-violet-100",
               date > today && "opacity-55",
             )}
           >
             <p className={cn(
               "text-[9px] font-bold tracking-wider text-muted-foreground uppercase sm:text-xs",
-              isSelected && "text-white/55",
+              isSelected && "text-violet-600",
             )}>
               {formatDate(date, { weekday: "short" }).slice(0, 2)}
             </p>
             <p
               className={cn(
                 "mx-auto mt-1.5 flex size-7 items-center justify-center rounded-full text-sm font-bold sm:size-9 sm:text-base",
-                isToday && !isSelected && "bg-[#dfff9b] text-[#173b2d]",
-                isSelected && "text-[#dfff9b]",
+                isToday && !isSelected && "bg-violet-100 text-violet-700",
+                isSelected && "text-violet-800",
               )}
             >
               {formatDate(date, { day: "numeric" })}
@@ -82,7 +82,7 @@ export function WeekCalendar({
             </div>
             <div className={cn(
               "mt-2 hidden items-center justify-center gap-1 text-[11px] font-semibold text-muted-foreground sm:flex",
-              isSelected && "text-white/60",
+              isSelected && "text-violet-600",
             )}>
               {complete === habits.length ? (
                 <Check className="size-3 text-emerald-600" />
