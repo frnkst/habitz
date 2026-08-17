@@ -65,6 +65,7 @@ describe("habit scoring", () => {
       ],
       habits,
       ["2026-08-17", "2026-08-18", "2026-08-19"],
+      ["2026-08-17", "2026-08-18", "2026-08-19"],
       "week",
     );
     expect(summary.durations[0]).toMatchObject({
@@ -85,12 +86,38 @@ describe("habit scoring", () => {
         entry("2026-08-20", { practice: 90 }),
       ],
       habits,
+      ["2026-08-17", "2026-08-18", "2026-08-19"],
       ["2026-08-17"],
       "week",
     );
     expect(summary.durations[0]).toMatchObject({
       total: 15,
-      targetTotal: 15,
+      targetTotal: 45,
+    });
+  });
+
+  it("uses the full week for timed targets on the first day", () => {
+    const week = [
+      "2026-08-17",
+      "2026-08-18",
+      "2026-08-19",
+      "2026-08-20",
+      "2026-08-21",
+      "2026-08-22",
+      "2026-08-23",
+    ];
+    const summary = summarizeEntries(
+      [entry("2026-08-17", { practice: 15 })],
+      habits,
+      week,
+      ["2026-08-17"],
+      "week",
+    );
+    expect(summary.durations[0].targetTotal).toBe(105);
+    expect(summary.booleans[0]).toMatchObject({
+      done: 0,
+      missed: 0,
+      open: 1,
     });
   });
 });

@@ -81,6 +81,7 @@ export type PeriodSummary = {
 export function summarizeEntries(
   entries: DailyEntry[],
   habits: HabitDefinition[],
+  periodDates: string[],
   eligibleDates: string[],
   period: "week" | "month" | "year",
 ): PeriodSummary {
@@ -97,7 +98,7 @@ export function summarizeEntries(
         label: habit.label,
         unit: habit.unit,
         total,
-        targetTotal: habit.target * eligibleDates.length,
+        targetTotal: habit.target * periodDates.length,
       };
     });
 

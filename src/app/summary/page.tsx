@@ -4,6 +4,7 @@ import { ArrowUpRight, CircleCheck, Timer } from "lucide-react";
 import { AppHeader } from "@/components/app-header";
 import { PeriodNavigation } from "@/components/period-navigation";
 import { ChartLoader } from "@/components/summary/chart-loader";
+import { Separator } from "@/components/ui/separator";
 import { requireOwner } from "@/lib/auth";
 import { getAppConfig } from "@/lib/config";
 import { getEntries } from "@/lib/data";
@@ -43,6 +44,7 @@ export default async function SummaryPage({
   const summary = summarizeEntries(
     entries,
     config.habits,
+    dates,
     eligibleDates,
     period,
   );
@@ -106,7 +108,7 @@ export default async function SummaryPage({
         >
           At a glance
         </h2>
-        <div className="mb-3 grid grid-cols-2 gap-2.5">
+        <div className="grid grid-cols-2 gap-2.5">
           <article className="relative overflow-hidden rounded-[1.5rem] bg-[#173b2d] p-4 text-white shadow-xl shadow-emerald-950/10">
             <Timer className="size-5 text-[#dfff9b]" />
             <p className="mt-5 text-3xl font-bold tracking-[-0.06em]">{totalMinutes}</p>
@@ -119,6 +121,13 @@ export default async function SummaryPage({
             <p className="text-[11px] font-semibold opacity-60">positive choices</p>
             <ArrowUpRight className="absolute top-4 right-4 size-4 opacity-35" />
           </article>
+        </div>
+        <Separator className="my-6 bg-violet-200/70" />
+        <div className="mb-3 flex items-end justify-between gap-4">
+          <h3 className="text-base font-bold tracking-[-0.025em]">By habit</h3>
+          <p className="text-[11px] font-semibold text-muted-foreground">
+            Full-period targets
+          </p>
         </div>
         <div className="grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4">
           {summary.durations.map((habit) => (
