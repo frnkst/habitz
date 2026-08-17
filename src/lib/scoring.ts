@@ -5,12 +5,7 @@ import type {
   HabitValues,
 } from "@/lib/habits";
 
-export type HabitStatus =
-  | "open"
-  | "missed"
-  | "partial"
-  | "achieved"
-  | "exceeded";
+export type HabitStatus = "open" | "missed" | "done";
 
 export function getHabitStatus(
   habit: HabitDefinition,
@@ -20,18 +15,12 @@ export function getHabitStatus(
     return "open";
   }
   if (habit.type === "boolean") {
-    return value === true ? "achieved" : "missed";
+    return value === true ? "done" : "missed";
   }
-  if (typeof value !== "number" || value <= 0) {
+  if (typeof value !== "number" || value < habit.target) {
     return "missed";
   }
-  if (value >= habit.target * 2) {
-    return "exceeded";
-  }
-  if (value >= habit.target) {
-    return "achieved";
-  }
-  return "partial";
+  return "done";
 }
 
 export function getProgress(
@@ -54,9 +43,7 @@ export function getDayCounts(
   const counts: Record<HabitStatus, number> = {
     open: 0,
     missed: 0,
-    partial: 0,
-    achieved: 0,
-    exceeded: 0,
+    done: 0,
   };
   for (const habit of habits) {
     counts[getHabitStatus(habit, values[habit.key])] += 1;
@@ -75,7 +62,7 @@ export type DurationSummary = {
 export type BooleanSummary = {
   key: string;
   label: string;
-  achieved: number;
+  done: number;
   missed: number;
   open: number;
 };
@@ -117,16 +104,16 @@ export function summarizeEntries(
   const booleans = habits
     .filter((habit) => habit.type === "boolean")
     .map((habit) => {
-      let achieved = 0;
+      let done = 0;
       let missed = 0;
       let open = 0;
       for (const date of eligibleDates) {
         const value = entryByDate.get(date)?.habit_values[habit.key];
-        if (value === true) achieved += 1;
+        if (value === true) done += 1;
         else if (value === false) missed += 1;
         else open += 1;
       }
-      return { key: habit.key, label: habit.label, achieved, missed, open };
+      return { key: habit.key, label: habit.label, done, missed, open };
     });
 
   const grouped = new Map<string, Record<string, number>>();

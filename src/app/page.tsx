@@ -19,12 +19,13 @@ export const dynamic = "force-dynamic";
 export default async function Home({
   searchParams,
 }: {
-  searchParams: Promise<{ date?: string }>;
+  searchParams: Promise<{ date?: string; quick?: string }>;
 }) {
   const config = getAppConfig();
   const user = await requireOwner();
   const today = todayInTimeZone(config.timezone);
-  const requestedDate = (await searchParams).date;
+  const params = await searchParams;
+  const requestedDate = params.date;
   const anchor =
     requestedDate && isDateKey(requestedDate) ? requestedDate : today;
   const range = getPeriodRange(anchor, "week", config.weekStart);
@@ -33,6 +34,11 @@ export default async function Home({
   const selectedEntry = entries.find((entry) => entry.entry_date === anchor);
   const previous = shiftPeriod(range.start, "week", -1);
   const next = shiftPeriod(range.start, "week", 1);
+  const quickHabitKey = config.habits.some(
+    (habit) => habit.key === params.quick,
+  )
+    ? params.quick
+    : undefined;
   const loggedDays = entries.filter((entry) =>
     Object.values(entry.habit_values).some((value) => value !== null),
   ).length;
@@ -76,6 +82,7 @@ export default async function Home({
         entry={selectedEntry}
         habits={config.habits}
         editable={anchor <= today}
+        quickHabitKey={quickHabitKey}
       />
     </main>
   );

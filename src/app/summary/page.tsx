@@ -52,8 +52,8 @@ export default async function SummaryPage({
     (total, habit) => total + habit.total,
     0,
   );
-  const achievedChoices = summary.booleans.reduce(
-    (total, habit) => total + habit.achieved,
+  const doneChoices = summary.booleans.reduce(
+    (total, habit) => total + habit.done,
     0,
   );
 
@@ -115,7 +115,7 @@ export default async function SummaryPage({
           </article>
           <article className="relative overflow-hidden rounded-[1.5rem] bg-[#dfff9b] p-4 text-[#173b2d] shadow-xl shadow-lime-900/5">
             <CircleCheck className="size-5" />
-            <p className="mt-5 text-3xl font-bold tracking-[-0.06em]">{achievedChoices}</p>
+            <p className="mt-5 text-3xl font-bold tracking-[-0.06em]">{doneChoices}</p>
             <p className="text-[11px] font-semibold opacity-60">positive choices</p>
             <ArrowUpRight className="absolute top-4 right-4 size-4 opacity-35" />
           </article>
@@ -149,9 +149,9 @@ export default async function SummaryPage({
                 {habit.label}
               </p>
               <p className="mt-2 text-2xl font-bold tracking-[-0.05em]">
-                {habit.achieved}
+                {habit.done}
                 <span className="ml-1 text-xs font-medium text-muted-foreground">
-                  / {habit.achieved + habit.missed + habit.open} days
+                  / {habit.done + habit.missed + habit.open} days
                 </span>
               </p>
               <p className="mt-1 text-[11px] text-muted-foreground">
@@ -200,9 +200,9 @@ export default async function SummaryPage({
               {summary.booleans.map((habit) => (
                 <tr key={habit.key} className="border-t">
                   <td className="py-2 pr-6">{habit.label}</td>
-                  <td className="py-2 pr-6">{habit.achieved} achieved</td>
+                  <td className="py-2 pr-6">{habit.done} done</td>
                   <td className="py-2">
-                    {habit.achieved + habit.missed + habit.open} eligible
+                    {habit.done + habit.missed + habit.open} eligible
                   </td>
                 </tr>
               ))}

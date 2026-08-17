@@ -38,13 +38,13 @@ function entry(date: string, habitValues: DailyEntry["habit_values"]): DailyEntr
 }
 
 describe("habit scoring", () => {
-  it("distinguishes open, missed, partial, achieved, and exceeded", () => {
+  it("distinguishes open, missed, and done", () => {
     const habit = habits[0];
     expect(getHabitStatus(habit, null)).toBe("open");
     expect(getHabitStatus(habit, 0)).toBe("missed");
-    expect(getHabitStatus(habit, 10)).toBe("partial");
-    expect(getHabitStatus(habit, 15)).toBe("achieved");
-    expect(getHabitStatus(habit, 30)).toBe("exceeded");
+    expect(getHabitStatus(habit, 10)).toBe("missed");
+    expect(getHabitStatus(habit, 15)).toBe("done");
+    expect(getHabitStatus(habit, 30)).toBe("done");
   });
 
   it("counts a day consistently", () => {
@@ -53,9 +53,7 @@ describe("habit scoring", () => {
     ).toEqual({
       open: 0,
       missed: 1,
-      partial: 0,
-      achieved: 1,
-      exceeded: 0,
+      done: 1,
     });
   });
 
@@ -74,7 +72,7 @@ describe("habit scoring", () => {
       targetTotal: 45,
     });
     expect(summary.booleans[0]).toMatchObject({
-      achieved: 1,
+      done: 1,
       missed: 1,
       open: 1,
     });

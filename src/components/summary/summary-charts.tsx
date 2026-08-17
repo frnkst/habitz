@@ -164,7 +164,7 @@ export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
               avoidLabelOverlap: true,
               label: { formatter: "{c}", fontWeight: 700 },
               data: [
-                { name: "Achieved", value: habit.achieved },
+                { name: "Done", value: habit.done },
                 { name: "Missed", value: habit.missed },
                 { name: "Open", value: habit.open },
               ],
@@ -178,11 +178,11 @@ export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
           >
             <h3 className="font-semibold tracking-[-0.02em]">{habit.label}</h3>
             <p className="mt-1 text-xs text-muted-foreground">
-              Achieved, missed, and open days
+              Done, missed, and open days
             </p>
             <Chart
               option={option}
-              label={`Donut chart for ${habit.label}: ${habit.achieved} achieved, ${habit.missed} missed, ${habit.open} open`}
+              label={`Donut chart for ${habit.label}: ${habit.done} done, ${habit.missed} missed, ${habit.open} open`}
             />
           </article>
         );

@@ -59,6 +59,31 @@ export type HabitDefinition = z.infer<typeof habitSchema>;
 export type HabitValue = number | boolean | null;
 export type HabitValues = Record<string, HabitValue>;
 
+export function getQuickLogValues(
+  values: HabitValues,
+  habits: HabitDefinition[],
+  habitKey?: string,
+): HabitValues {
+  if (!habitKey || values[habitKey] != null) {
+    return values;
+  }
+  const habit = habits.find((candidate) => candidate.key === habitKey);
+  if (!habit) {
+    return values;
+  }
+  return {
+    ...values,
+    [habitKey]: habit.type === "duration" ? habit.target : true,
+  };
+}
+
+export function mergeHabitValues(
+  existing: HabitValues,
+  updates: HabitValues,
+): HabitValues {
+  return { ...existing, ...updates };
+}
+
 export function parseHabitValues(
   input: unknown,
   habits: HabitDefinition[],

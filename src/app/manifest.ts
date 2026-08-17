@@ -7,8 +7,8 @@ export default function manifest(): MetadataRoute.Manifest {
     description: "A simple, private habit tracker.",
     start_url: "/",
     display: "standalone",
-    background_color: "#f4f7f5",
-    theme_color: "#f4f7f5",
+    background_color: "#f4f1fb",
+    theme_color: "#f4f1fb",
     icons: [
       {
         src: "/icon.svg",

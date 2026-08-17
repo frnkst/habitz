@@ -25,6 +25,7 @@ import type {
   HabitValue,
   HabitValues,
 } from "@/lib/habits";
+import { getQuickLogValues } from "@/lib/habits";
 import { cn } from "@/lib/utils";
 
 const initialState: SaveEntryState = { status: "idle" };
@@ -34,13 +35,19 @@ export function DayLogger({
   habits,
   values: initialValues,
   editable,
+  quickHabitKey,
 }: {
   date: string;
   habits: HabitDefinition[];
   values: HabitValues;
   editable: boolean;
+  quickHabitKey?: string;
 }) {
-  const [values, setValues] = useState<HabitValues>(initialValues);
+  const quickHabit = habits.find((habit) => habit.key === quickHabitKey);
+  const visibleHabits = quickHabit ? [quickHabit] : habits;
+  const [values, setValues] = useState<HabitValues>(() =>
+    getQuickLogValues(initialValues, habits, quickHabitKey),
+  );
   const [state, action, pending] = useActionState(saveDailyEntry, initialState);
 
   function setValue(key: string, value: HabitValue) {
@@ -48,7 +55,7 @@ export function DayLogger({
   }
 
   return (
-    <Drawer showSwipeHandle>
+    <Drawer showSwipeHandle defaultOpen={Boolean(quickHabitKey)}>
       <DrawerTrigger
         disabled={!editable}
         className={cn(
@@ -63,15 +70,24 @@ export function DayLogger({
       <DrawerContent className="mx-auto max-w-xl rounded-t-[2rem] border-white/80 bg-[#f8faf4]">
         <form action={action} className="flex min-h-0 flex-1 flex-col">
           <DrawerHeader className="px-5 pt-3 text-left">
-            <p className="eyebrow mb-1 text-emerald-700">Daily check-in</p>
-            <DrawerTitle className="text-2xl font-bold tracking-[-0.045em]">How did today go?</DrawerTitle>
+            <p className="eyebrow mb-1 text-emerald-700">
+              {quickHabit ? "Quick log" : "Daily check-in"}
+            </p>
+            <DrawerTitle className="text-2xl font-bold tracking-[-0.045em]">
+              {quickHabit ? quickHabit.label : "How did today go?"}
+            </DrawerTitle>
             <DrawerDescription>
-              Tap what you did. Leave the rest open for later.
+              {quickHabit
+                ? "Only this habit will be updated."
+                : "Tap what you did. Leave the rest open for later."}
             </DrawerDescription>
           </DrawerHeader>
           <input type="hidden" name="entryDate" value={date} />
+          {quickHabit ? (
+            <input type="hidden" name="quickHabitKey" value={quickHabit.key} />
+          ) : null}
           <div className="space-y-3 overflow-y-auto px-4 py-5 pb-7 sm:px-5">
-            {habits.map((habit) => {
+            {visibleHabits.map((habit) => {
               const value = values[habit.key];
               return (
                 <fieldset key={habit.key} className="surface-card space-y-3 rounded-[1.35rem] p-3.5">
@@ -135,15 +151,20 @@ export function DayLogger({
                     </div>
                   ) : (
                     <div className="grid grid-cols-3 gap-1.5 rounded-xl bg-[#f2f5ed] p-1">
-                      <input
-                        type="hidden"
-                        name={habit.key}
-                        value={
-                          typeof value === "boolean" ? String(value) : ""
-                        }
-                      />
+                      {!quickHabit ? (
+                        <input
+                          type="hidden"
+                          name={habit.key}
+                          value={
+                            typeof value === "boolean" ? String(value) : ""
+                          }
+                        />
+                      ) : null}
                       <Button
-                        type="button"
+                        type={quickHabit ? "submit" : "button"}
+                        name={quickHabit ? habit.key : undefined}
+                        value={quickHabit ? "true" : undefined}
+                        disabled={pending}
                         variant={value === true ? "default" : "outline"}
                         className={cn("h-11 rounded-lg border-0 shadow-none", value === true && "bg-[#173b2d] text-white hover:bg-[#173b2d]")}
                         onClick={() => setValue(habit.key, true)}
@@ -151,7 +172,10 @@ export function DayLogger({
                         <Check /> Yes
                       </Button>
                       <Button
-                        type="button"
+                        type={quickHabit ? "submit" : "button"}
+                        name={quickHabit ? habit.key : undefined}
+                        value={quickHabit ? "false" : undefined}
+                        disabled={pending}
                         variant={value === false ? "destructive" : "outline"}
                         className={cn("h-11 rounded-lg border-0 shadow-none", value === false && "bg-[#ffdfdb] text-[#8d342b] hover:bg-[#ffdfdb]")}
                         onClick={() => setValue(habit.key, false)}
@@ -159,7 +183,10 @@ export function DayLogger({
                         <Minus /> No
                       </Button>
                       <Button
-                        type="button"
+                        type={quickHabit ? "submit" : "button"}
+                        name={quickHabit ? habit.key : undefined}
+                        value={quickHabit ? "" : undefined}
+                        disabled={pending}
                         variant={value == null ? "secondary" : "ghost"}
                         className="h-11 rounded-lg border-0 shadow-none"
                         onClick={() => setValue(habit.key, null)}
@@ -180,15 +207,21 @@ export function DayLogger({
               </p>
             ) : null}
           </div>
-          <DrawerFooter className="border-t border-white/90 bg-white/90 px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-xl">
-            <Button
-              type="submit"
-              disabled={pending}
-              className="h-14 rounded-2xl bg-[#173b2d] text-base font-bold shadow-xl shadow-emerald-950/15 hover:bg-[#24543f]"
-            >
-              {pending ? "Saving…" : "Save day"}
-            </Button>
-          </DrawerFooter>
+          {quickHabit?.type !== "boolean" ? (
+            <DrawerFooter className="border-t border-white/90 bg-white/90 px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-xl">
+              <Button
+                type="submit"
+                disabled={pending}
+                className="h-14 rounded-2xl bg-[#173b2d] text-base font-bold shadow-xl shadow-emerald-950/15 hover:bg-[#24543f]"
+              >
+                {pending
+                  ? "Saving…"
+                  : quickHabit
+                    ? `Save ${quickHabit.label}`
+                    : "Save day"}
+              </Button>
+            </DrawerFooter>
+          ) : null}
         </form>
       </DrawerContent>
     </Drawer>

@@ -6,7 +6,7 @@ import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/auth";
 import { getAppConfig } from "@/lib/config";
 import { isDateKey, todayInTimeZone } from "@/lib/dates";
-import { parseHabitValues } from "@/lib/habits";
+import { mergeHabitValues, parseHabitValues } from "@/lib/habits";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export type SaveEntryState = {
@@ -51,13 +51,21 @@ export async function saveDailyEntry(
   }
 
   const submitted: Record<string, FormDataEntryValue | null> = {};
-  for (const habit of config.habits) {
+  const quickHabitKey = String(formData.get("quickHabitKey") ?? "");
+  const quickHabit = quickHabitKey
+    ? config.habits.find((habit) => habit.key === quickHabitKey)
+    : undefined;
+  if (quickHabitKey && !quickHabit) {
+    return { status: "error", message: "Choose a valid habit." };
+  }
+  const submittedHabits = quickHabit ? [quickHabit] : config.habits;
+  for (const habit of submittedHabits) {
     submitted[habit.key] = formData.get(habit.key);
   }
 
   let habitValues;
   try {
-    habitValues = parseHabitValues(submitted, config.habits);
+    habitValues = parseHabitValues(submitted, submittedHabits);
   } catch (error) {
     return {
       status: "error",
@@ -66,6 +74,24 @@ export async function saveDailyEntry(
   }
 
   const supabase = await createServerSupabaseClient();
+  if (quickHabit) {
+    const { data: existingEntry, error: readError } = await supabase
+      .from("daily_entries")
+      .select("habit_values")
+      .eq("user_id", user.id)
+      .eq("entry_date", entryDate)
+      .maybeSingle();
+    if (readError) {
+      return {
+        status: "error",
+        message: `Could not load this day: ${readError.message}`,
+      };
+    }
+    habitValues = mergeHabitValues(
+      existingEntry?.habit_values ?? {},
+      habitValues,
+    );
+  }
   const { error } = await supabase.from("daily_entries").upsert(
     {
       user_id: user.id,

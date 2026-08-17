@@ -21,7 +21,7 @@ export default async function LoginPage({
     <main className="relative flex min-h-dvh items-center justify-center overflow-hidden px-5 py-10">
       <div className="aurora absolute inset-0 -z-10" />
       <div className="absolute -top-16 -right-20 size-56 rounded-full border-[38px] border-white/25" aria-hidden="true" />
-      <div className="absolute -bottom-24 -left-16 size-64 rounded-full border-[44px] border-[#dfff9b]/35" aria-hidden="true" />
+      <div className="absolute -bottom-24 -left-16 size-64 rounded-full border-[44px] border-[#d8ccff]/55" aria-hidden="true" />
       <section className="glass-panel relative w-full max-w-sm overflow-hidden rounded-[2.25rem] p-7 sm:p-8">
         <div className="absolute top-0 right-0 h-28 w-28 rounded-bl-[4rem] bg-[#dfff9b]/70" aria-hidden="true" />
         <div className="relative mb-14 flex size-12 items-center justify-center rounded-[1rem] bg-[#173b2d] text-[#dfff9b] shadow-xl shadow-emerald-950/15">

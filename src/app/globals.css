@@ -49,7 +49,7 @@
 }
 
 :root {
-  --background: oklch(0.975 0.012 110);
+  --background: oklch(0.975 0.018 290);
   --foreground: oklch(0.19 0.035 155);
   --card: oklch(0.995 0.004 110);
   --card-foreground: oklch(0.19 0.035 155);
@@ -124,9 +124,10 @@
   body {
     @apply bg-background text-foreground;
     background-image:
-      radial-gradient(circle at 8% -8%, rgb(110 231 183 / 0.34), transparent 30rem),
-      radial-gradient(circle at 105% 18%, rgb(217 249 157 / 0.38), transparent 28rem),
-      linear-gradient(180deg, #f8faf4 0%, #f4f7f2 100%);
+      radial-gradient(circle at 4% -10%, rgb(196 181 253 / 0.42), transparent 31rem),
+      radial-gradient(circle at 104% 16%, rgb(224 210 255 / 0.52), transparent 29rem),
+      radial-gradient(circle at 55% 110%, rgb(219 234 254 / 0.48), transparent 34rem),
+      linear-gradient(180deg, #fbfaff 0%, #f4f1fb 100%);
     background-attachment: fixed;
     min-height: 100dvh;
   }
@@ -170,10 +171,10 @@
 
   .aurora {
     background:
-      radial-gradient(circle at 20% 20%, rgb(110 231 183 / 0.7), transparent 35%),
-      radial-gradient(circle at 90% 30%, rgb(190 242 100 / 0.55), transparent 35%),
-      radial-gradient(circle at 45% 90%, rgb(153 246 228 / 0.45), transparent 40%),
-      linear-gradient(145deg, #f8faee, #eef8f2);
+      radial-gradient(circle at 18% 18%, rgb(205 190 255 / 0.76), transparent 36%),
+      radial-gradient(circle at 92% 26%, rgb(224 214 255 / 0.7), transparent 37%),
+      radial-gradient(circle at 42% 92%, rgb(208 228 255 / 0.62), transparent 42%),
+      linear-gradient(145deg, #fbfaff, #f3effb);
   }
 }
 

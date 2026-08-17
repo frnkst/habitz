@@ -10,9 +10,7 @@ import { cn } from "@/lib/utils";
 const stateStyles = {
   open: "bg-slate-200",
   missed: "bg-[#ff7f73]",
-  partial: "bg-[#d8e85d]",
-  achieved: "bg-[#68d391]",
-  exceeded: "bg-[#18a56c]",
+  done: "bg-[#18a56c]",
 };
 
 export function WeekCalendar({
@@ -36,7 +34,7 @@ export function WeekCalendar({
         const entry = entryByDate.get(date);
         const values = entry?.habit_values ?? {};
         const counts = getDayCounts(habits, values);
-        const complete = counts.achieved + counts.exceeded;
+        const complete = counts.done;
         const isSelected = date === selectedDate;
         const isToday = date === today;
 
@@ -102,9 +100,7 @@ export function WeekCalendar({
         {Object.entries({
           open: "Open",
           missed: "Missed",
-          partial: "Partial",
-          achieved: "Good",
-          exceeded: "Great",
+          done: "Done",
         }).map(([state, label]) => (
           <span key={state} className="flex items-center gap-1.5">
             <span

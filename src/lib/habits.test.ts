@@ -2,6 +2,8 @@ import { describe, expect, it } from "vitest";
 
 import {
   habitConfigSchema,
+  getQuickLogValues,
+  mergeHabitValues,
   parseHabitValues,
   type HabitDefinition,
 } from "@/lib/habits";
@@ -44,5 +46,29 @@ describe("habit configuration", () => {
     expect(() =>
       parseHabitValues({ practice: "1441", choice: "true" }, habits),
     ).toThrow("Practice");
+  });
+
+  it("prefills open habits for two-tap logging", () => {
+    expect(getQuickLogValues({}, habits, "practice")).toEqual({
+      practice: 15,
+    });
+    expect(getQuickLogValues({}, habits, "choice")).toEqual({
+      choice: true,
+    });
+  });
+
+  it("preserves an existing value when quick logging", () => {
+    expect(
+      getQuickLogValues({ practice: 5 }, habits, "practice"),
+    ).toEqual({ practice: 5 });
+  });
+
+  it("merges a focused update without changing other habits", () => {
+    expect(
+      mergeHabitValues(
+        { practice: 5, choice: false },
+        { practice: 15 },
+      ),
+    ).toEqual({ practice: 15, choice: false });
   });
 });
