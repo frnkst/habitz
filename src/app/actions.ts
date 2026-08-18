@@ -31,7 +31,10 @@ export async function signInWithGitHub() {
 
 export async function signOut() {
   const supabase = await createServerSupabaseClient();
-  await supabase.auth.signOut();
+  const { error } = await supabase.auth.signOut({ scope: "local" });
+  if (error && error.name !== "AuthSessionMissingError") {
+    redirect(`/login?error=${encodeURIComponent(error.message)}`);
+  }
   redirect("/login");
 }
 

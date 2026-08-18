@@ -49,9 +49,21 @@ export function DayDetail({
           <p className="eyebrow text-emerald-700">
             {formatDate(date, { weekday: "long" })}
           </p>
-          <h2 className="mt-1 font-sans text-[1.75rem] font-bold tracking-[-0.05em]">
-            {formatDate(date, { day: "numeric", month: "long" })}
-          </h2>
+          <div className="mt-1 flex items-center gap-2.5">
+            <h2 className="font-sans text-[1.75rem] font-bold tracking-[-0.05em]">
+              {formatDate(date, { day: "numeric", month: "long" })}
+            </h2>
+            {editable ? (
+              <DayLogger
+                key={`${date}-${entry?.updated_at ?? "new"}-${quickHabitKey ?? "full"}`}
+                date={date}
+                habits={habits}
+                values={values}
+                editable={editable}
+                quickHabitKey={quickHabitKey}
+              />
+            ) : null}
+          </div>
         </div>
         <Badge variant="secondary" className="rounded-full border border-white/80 bg-white/70 px-3 py-1.5 text-xs font-bold text-emerald-800 shadow-sm">
           {completed}/{habits.length} complete
@@ -107,14 +119,6 @@ export function DayDetail({
             );
         })}
       </div>
-      <DayLogger
-        key={`${date}-${entry?.updated_at ?? "new"}-${quickHabitKey ?? "full"}`}
-        date={date}
-        habits={habits}
-        values={values}
-        editable={editable}
-        quickHabitKey={quickHabitKey}
-      />
     </section>
   );
 }

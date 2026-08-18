@@ -13,6 +13,7 @@ import {
   shiftPeriod,
   todayInTimeZone,
 } from "@/lib/dates";
+import { getMotivation } from "@/lib/motivation";
 
 export const dynamic = "force-dynamic";
 
@@ -42,6 +43,7 @@ export default async function Home({
   const loggedDays = entries.filter((entry) =>
     Object.values(entry.habit_values).some((value) => value !== null),
   ).length;
+  const motivation = getMotivation(entries, config.habits, dates, today);
 
   return (
     <main className="mx-auto min-h-dvh w-full max-w-5xl px-4 py-5 pb-28 sm:px-6 sm:py-7 sm:pb-12">
@@ -49,10 +51,10 @@ export default async function Home({
       <section className="mb-5 flex items-end justify-between gap-4 px-1">
         <div>
           <p className="eyebrow text-emerald-700">Your week</p>
-          <h1 className="display-title mt-1 text-[2.7rem] leading-[0.92] sm:text-5xl">
-            Small wins,
+          <h1 className="display-title mt-1 text-[2.7rem] leading-[1.04] sm:text-5xl">
+            {motivation.calendar[0]}
             <br />
-            <span className="text-emerald-600">beautifully kept.</span>
+            <span className="text-emerald-600">{motivation.calendar[1]}</span>
           </h1>
         </div>
         <div className="hidden rounded-3xl bg-[#dfff9b] px-4 py-3 text-right text-[#173b2d] sm:block">

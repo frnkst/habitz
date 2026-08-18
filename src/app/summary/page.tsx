@@ -19,6 +19,7 @@ import {
 } from "@/lib/dates";
 import { summarizeEntries } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
+import { getMotivation } from "@/lib/motivation";
 
 export const dynamic = "force-dynamic";
 
@@ -58,6 +59,7 @@ export default async function SummaryPage({
     (total, habit) => total + habit.done,
     0,
   );
+  const motivation = getMotivation(entries, config.habits, dates, today);
 
   return (
     <main className="mx-auto min-h-dvh w-full max-w-6xl px-4 py-5 pb-28 sm:px-6 sm:py-7 sm:pb-12">
@@ -66,15 +68,15 @@ export default async function SummaryPage({
           <p className="eyebrow text-emerald-700">
             Your momentum
           </p>
-          <h1 className="display-title mt-1 text-[2.7rem] leading-[0.92] sm:text-5xl">
-            Progress,
+          <h1 className="display-title mt-1 text-[2.7rem] leading-[1.04] sm:text-5xl">
+            {motivation.summary[0]}
             <br />
-            <span className="text-emerald-600">made visible.</span>
+            <span className="text-emerald-600">{motivation.summary[1]}</span>
           </h1>
       </section>
       <section className="glass-panel rounded-[1.85rem] p-3.5 sm:p-6">
         <nav
-          className="mb-6 grid grid-cols-3 rounded-[1rem] bg-[#eef3ec] p-1"
+          className="mb-6 grid grid-cols-3 rounded-[1rem] bg-[#f0ecfa] p-1"
           aria-label="Summary period"
         >
           {(["week", "month", "year"] as const).map((item) => (
@@ -85,8 +87,8 @@ export default async function SummaryPage({
               className={cn(
                 "rounded-xl px-3 py-2.5 text-center text-sm font-bold capitalize transition",
                 period === item
-                  ? "bg-[#173b2d] text-white shadow-md shadow-emerald-950/10"
-                  : "text-muted-foreground hover:text-slate-950",
+                  ? "bg-gradient-to-br from-[#5840c7] to-[#7c5ce7] text-white shadow-md shadow-violet-950/15"
+                  : "text-muted-foreground hover:bg-white/45 hover:text-violet-950",
               )}
             >
               {item}
@@ -109,14 +111,14 @@ export default async function SummaryPage({
           At a glance
         </h2>
         <div className="grid grid-cols-2 gap-2.5">
-          <article className="relative overflow-hidden rounded-[1.5rem] bg-[#173b2d] p-4 text-white shadow-xl shadow-emerald-950/10">
-            <Timer className="size-5 text-[#dfff9b]" />
+          <article className="relative overflow-hidden rounded-[1.5rem] bg-gradient-to-br from-[#4d379f] to-[#7052d1] p-4 text-white shadow-xl shadow-violet-950/15">
+            <Timer className="size-5 text-[#e9e2ff]" />
             <p className="mt-5 text-3xl font-bold tracking-[-0.06em]">{totalMinutes}</p>
             <p className="text-[11px] font-semibold text-white/55">minutes invested</p>
             <ArrowUpRight className="absolute top-4 right-4 size-4 text-white/35" />
           </article>
-          <article className="relative overflow-hidden rounded-[1.5rem] bg-[#dfff9b] p-4 text-[#173b2d] shadow-xl shadow-lime-900/5">
-            <CircleCheck className="size-5" />
+          <article className="relative overflow-hidden rounded-[1.5rem] bg-gradient-to-br from-[#4d379f] to-[#7052d1] p-4 text-white shadow-xl shadow-violet-950/15">
+            <CircleCheck className="size-5 text-[#e9e2ff]" />
             <p className="mt-5 text-3xl font-bold tracking-[-0.06em]">{doneChoices}</p>
             <p className="text-[11px] font-semibold opacity-60">positive choices</p>
             <ArrowUpRight className="absolute top-4 right-4 size-4 opacity-35" />

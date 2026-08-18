@@ -58,14 +58,13 @@ export function DayLogger({
     <Drawer showSwipeHandle defaultOpen={Boolean(quickHabitKey)}>
       <DrawerTrigger
         disabled={!editable}
-        className={cn(
-          "mt-4 flex h-14 w-full items-center justify-center gap-2 rounded-[1.15rem] bg-[#173b2d] px-4 text-sm font-bold text-white shadow-xl shadow-emerald-950/15 transition hover:-translate-y-0.5 hover:bg-[#24543f] disabled:cursor-not-allowed disabled:opacity-50",
-        )}
+        aria-label="Log this day"
+        className="group flex size-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#5840c7] to-[#7c5ce7] text-[#f0ecff] shadow-lg shadow-violet-950/20 transition duration-200 hover:-translate-y-0.5 hover:scale-105 active:translate-y-0 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        <span className="flex size-7 items-center justify-center rounded-full bg-[#dfff9b] text-[#173b2d]">
-          <Plus className="size-4" aria-hidden="true" />
-        </span>
-        {editable ? "Log this day" : "Future day"}
+        <Plus
+          className="size-4.5 transition group-hover:rotate-90"
+          aria-hidden="true"
+        />
       </DrawerTrigger>
       <DrawerContent className="mx-auto max-w-xl rounded-t-[2rem] border-white/80 bg-[#f8faf4]">
         <form action={action} className="flex min-h-0 flex-1 flex-col">
@@ -76,9 +75,9 @@ export function DayLogger({
             <DrawerTitle className="text-2xl font-bold tracking-[-0.045em]">
               {quickHabit ? quickHabit.label : "How did today go?"}
             </DrawerTitle>
-            <DrawerDescription>
+            <DrawerDescription className={quickHabit ? "sr-only" : undefined}>
               {quickHabit
-                ? "Only this habit will be updated."
+                ? "Quick habit update."
                 : "Tap what you did. Leave the rest open for later."}
             </DrawerDescription>
           </DrawerHeader>
@@ -129,23 +128,35 @@ export function DayLogger({
                         }
                         className="h-12 min-w-0 flex-1 rounded-xl border-0 bg-[#f2f5ed] text-center text-base font-bold shadow-none"
                       />
-                      {habit.presets.map((preset) => (
+                      {[
+                        { label: "-5", delta: -5 },
+                        { label: "+5", delta: 5 },
+                      ].map(({ label, delta }) => (
                         <Button
-                          key={preset}
+                          key={delta}
                           type="button"
                           variant="outline"
-                          className="h-12 rounded-xl border-0 bg-[#e7f5e7] px-3 font-bold text-emerald-800 shadow-none hover:bg-[#d8efd9]"
+                          className={cn(
+                            "h-12 min-w-13 rounded-xl border-0 px-3 font-bold shadow-none",
+                            delta > 0
+                              ? "bg-[#e7f5e7] text-emerald-800 hover:bg-[#d8efd9]"
+                              : "bg-[#f2f5ed] text-slate-600 hover:bg-[#e7ebe2]",
+                          )}
                           onClick={() =>
                             setValue(
                               habit.key,
-                              Math.min(
+                              Math.max(
+                                0,
+                                Math.min(
                                 1440,
-                                (typeof value === "number" ? value : 0) + preset,
+                                (typeof value === "number" ? value : 0) +
+                                  delta,
+                                ),
                               ),
                             )
                           }
                         >
-                          +{preset}
+                          {label}
                         </Button>
                       ))}
                     </div>
