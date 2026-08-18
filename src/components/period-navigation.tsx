@@ -22,7 +22,7 @@ export function PeriodNavigation({
         aria-label="Previous period"
         className={cn(
           buttonVariants({ variant: "outline", size: "icon" }),
-          "size-10 rounded-full border-white/80 bg-white/75 shadow-sm",
+          "size-10 rounded-full border-white/85 bg-white/75 text-violet-700 shadow-sm shadow-violet-950/5",
         )}
       >
         <ChevronLeft />
@@ -33,7 +33,7 @@ export function PeriodNavigation({
         </p>
         <Link
           href={todayHref}
-          className="mt-0.5 inline-block text-[11px] font-semibold text-emerald-700 hover:underline"
+          className="mt-0.5 inline-block text-[11px] font-semibold text-violet-700 hover:underline"
         >
           Back to today
         </Link>
@@ -43,7 +43,7 @@ export function PeriodNavigation({
         aria-label="Next period"
         className={cn(
           buttonVariants({ variant: "outline", size: "icon" }),
-          "size-10 rounded-full border-white/80 bg-white/75 shadow-sm",
+          "size-10 rounded-full border-white/85 bg-white/75 text-violet-700 shadow-sm shadow-violet-950/5",
         )}
       >
         <ChevronRight />

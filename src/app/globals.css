@@ -49,38 +49,38 @@
 }
 
 :root {
-  --background: oklch(0.975 0.018 290);
-  --foreground: oklch(0.19 0.035 155);
-  --card: oklch(0.995 0.004 110);
-  --card-foreground: oklch(0.19 0.035 155);
-  --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.145 0 0);
-  --primary: oklch(0.27 0.065 155);
-  --primary-foreground: oklch(0.985 0 0);
-  --secondary: oklch(0.95 0.025 145);
-  --secondary-foreground: oklch(0.27 0.065 155);
-  --muted: oklch(0.955 0.012 120);
-  --muted-foreground: oklch(0.49 0.035 155);
-  --accent: oklch(0.93 0.07 135);
-  --accent-foreground: oklch(0.23 0.055 155);
-  --destructive: oklch(0.577 0.245 27.325);
-  --border: oklch(0.895 0.02 135);
-  --input: oklch(0.895 0.02 135);
-  --ring: oklch(0.7 0.16 155);
-  --chart-1: oklch(0.7 0.16 155);
-  --chart-2: oklch(0.78 0.17 120);
-  --chart-3: oklch(0.55 0.11 175);
-  --chart-4: oklch(0.68 0.12 190);
-  --chart-5: oklch(0.76 0.16 80);
+  --background: #f7f3ff;
+  --foreground: #302943;
+  --card: #fffcff;
+  --card-foreground: #302943;
+  --popover: #fffbff;
+  --popover-foreground: #302943;
+  --primary: #7457d9;
+  --primary-foreground: #ffffff;
+  --secondary: #eee8ff;
+  --secondary-foreground: #4d398e;
+  --muted: #f1edf8;
+  --muted-foreground: #77708c;
+  --accent: #d9f4e9;
+  --accent-foreground: #285e4c;
+  --destructive: #d85f78;
+  --border: #dfd7ed;
+  --input: #dfd7ed;
+  --ring: #8b72e8;
+  --chart-1: #7457d9;
+  --chart-2: #ed8aaa;
+  --chart-3: #79cfb2;
+  --chart-4: #78aee7;
+  --chart-5: #ffb68f;
   --radius: 0.9rem;
-  --sidebar: oklch(0.985 0 0);
-  --sidebar-foreground: oklch(0.145 0 0);
-  --sidebar-primary: oklch(0.205 0 0);
-  --sidebar-primary-foreground: oklch(0.985 0 0);
-  --sidebar-accent: oklch(0.97 0 0);
-  --sidebar-accent-foreground: oklch(0.205 0 0);
-  --sidebar-border: oklch(0.922 0 0);
-  --sidebar-ring: oklch(0.708 0 0);
+  --sidebar: #fffcff;
+  --sidebar-foreground: #302943;
+  --sidebar-primary: #7457d9;
+  --sidebar-primary-foreground: #ffffff;
+  --sidebar-accent: #eee8ff;
+  --sidebar-accent-foreground: #4d398e;
+  --sidebar-border: #dfd7ed;
+  --sidebar-ring: #8b72e8;
 }
 
 .dark {
@@ -124,10 +124,10 @@
   body {
     @apply bg-background text-foreground;
     background-image:
-      radial-gradient(circle at 4% -10%, rgb(196 181 253 / 0.42), transparent 31rem),
-      radial-gradient(circle at 104% 16%, rgb(224 210 255 / 0.52), transparent 29rem),
-      radial-gradient(circle at 55% 110%, rgb(219 234 254 / 0.48), transparent 34rem),
-      linear-gradient(180deg, #fbfaff 0%, #f4f1fb 100%);
+      radial-gradient(circle at 4% -10%, rgb(205 190 255 / 0.5), transparent 31rem),
+      radial-gradient(circle at 104% 16%, rgb(255 211 229 / 0.48), transparent 29rem),
+      radial-gradient(circle at 55% 110%, rgb(198 240 223 / 0.46), transparent 34rem),
+      linear-gradient(180deg, #fdfaff 0%, #f5f0fc 100%);
     background-attachment: fixed;
     min-height: 100dvh;
   }
@@ -143,20 +143,20 @@
 
 @layer utilities {
   .glass-panel {
-    border: 1px solid rgb(255 255 255 / 0.92);
-    background: rgb(255 255 255 / 0.76);
+    border: 1px solid rgb(255 255 255 / 0.94);
+    background: rgb(255 252 255 / 0.78);
     box-shadow:
-      0 1px 1px rgb(23 59 45 / 0.03),
-      0 18px 50px rgb(23 59 45 / 0.07);
+      0 1px 1px rgb(82 61 136 / 0.03),
+      0 18px 50px rgb(82 61 136 / 0.09);
     backdrop-filter: blur(22px);
   }
 
   .surface-card {
-    border: 1px solid rgb(219 228 220 / 0.8);
-    background: rgb(255 255 255 / 0.88);
+    border: 1px solid rgb(226 217 239 / 0.88);
+    background: rgb(255 252 255 / 0.9);
     box-shadow:
       0 1px 0 rgb(255 255 255 / 0.9) inset,
-      0 10px 30px rgb(23 59 45 / 0.055);
+      0 10px 30px rgb(82 61 136 / 0.07);
   }
 
   .eyebrow {
@@ -171,10 +171,10 @@
 
   .aurora {
     background:
-      radial-gradient(circle at 18% 18%, rgb(205 190 255 / 0.76), transparent 36%),
-      radial-gradient(circle at 92% 26%, rgb(224 214 255 / 0.7), transparent 37%),
-      radial-gradient(circle at 42% 92%, rgb(208 228 255 / 0.62), transparent 42%),
-      linear-gradient(145deg, #fbfaff, #f3effb);
+      radial-gradient(circle at 18% 18%, rgb(205 190 255 / 0.82), transparent 36%),
+      radial-gradient(circle at 92% 26%, rgb(255 205 226 / 0.64), transparent 37%),
+      radial-gradient(circle at 42% 92%, rgb(193 240 222 / 0.66), transparent 42%),
+      linear-gradient(145deg, #fdfaff, #f4eefc);
   }
 }
 

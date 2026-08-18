@@ -11,9 +11,9 @@ import { DayLogger } from "./day-logger";
 import { HabitIcon } from "./habit-icon";
 
 const cardStyles = {
-  open: "border-slate-200/80 bg-white/72 text-slate-500",
-  missed: "border-[#ffd6d1] bg-[#fff3f1] text-[#9a3f35]",
-  done: "border-emerald-200 bg-emerald-100/90 text-emerald-900 shadow-lg shadow-emerald-900/5",
+  open: "border-violet-100/90 bg-white/75 text-[#746d85]",
+  missed: "border-[#f7c6d4] bg-[#fff0f5] text-[#91445c]",
+  done: "border-[#aee2ce] bg-[#d9f4e9] text-[#285e4c] shadow-lg shadow-emerald-900/5",
 };
 
 function displayValue(
@@ -50,7 +50,7 @@ export function DayDetail({
     <section className="mt-7 pb-20 sm:pb-0">
       <div className="mb-4 flex items-end justify-between gap-4">
         <div>
-          <p className="eyebrow text-emerald-700">
+          <p className="eyebrow text-violet-700">
             {formatDate(date, { weekday: "long" })}
           </p>
           <div className="mt-1 flex items-center gap-2.5">
@@ -69,7 +69,7 @@ export function DayDetail({
             ) : null}
           </div>
         </div>
-        <Badge variant="secondary" className="rounded-full border border-white/80 bg-white/70 px-3 py-1.5 text-xs font-bold text-emerald-800 shadow-sm">
+        <Badge variant="secondary" className="rounded-full border border-violet-100/90 bg-white/72 px-3 py-1.5 text-xs font-bold text-violet-700 shadow-sm shadow-violet-950/5">
           {completed}/{habits.length} complete
         </Badge>
       </div>
@@ -85,9 +85,9 @@ export function DayDetail({
           const card = (
             <article
               className={cn(
-                "relative h-full min-w-0 rounded-[1.35rem] border p-3.5 shadow-[0_8px_25px_rgba(23,59,45,0.04)] transition duration-200",
+                "relative h-full min-w-0 rounded-[1.35rem] border p-3.5 shadow-[0_8px_25px_rgba(82,61,136,0.05)] transition duration-200",
                 editable &&
-                  "group-hover:-translate-y-0.5 group-hover:shadow-[0_12px_30px_rgba(23,59,45,0.09)]",
+                  "group-hover:-translate-y-0.5 group-hover:shadow-[0_12px_30px_rgba(82,61,136,0.12)]",
                 cardStyles[status],
               )}
             >
@@ -113,7 +113,7 @@ export function DayDetail({
               <Link
                 key={habit.key}
                 href={`/?date=${date}&quick=${habit.key}`}
-                className="group min-w-0 rounded-[1.35rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-emerald-500 focus-visible:ring-offset-2"
+                className="group min-w-0 rounded-[1.35rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
                 aria-label={`Quick log ${habit.label}`}
               >
                 {card}

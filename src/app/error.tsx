@@ -23,7 +23,7 @@ export default function ErrorPage({
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
           {error.message || "The application could not load this view."}
         </p>
-        <Button onClick={reset} className="mt-6 h-12 rounded-2xl bg-[#173b2d] px-6 font-bold hover:bg-[#24543f]">
+        <Button onClick={reset} className="mt-6 h-12 rounded-2xl bg-gradient-to-br from-[#7457d9] to-[#8e72e7] px-6 font-bold text-white shadow-lg shadow-violet-950/15 hover:from-[#684bcf] hover:to-[#8265df]">
           Try again
         </Button>
       </section>

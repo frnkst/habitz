@@ -1,4 +1,10 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 128 128">
-  <rect width="128" height="128" rx="32" fill="#10b981"/>
+  <defs>
+    <linearGradient id="sorbet" x1="12" y1="8" x2="116" y2="122" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#9B86F2"/>
+      <stop offset="1" stop-color="#6548C8"/>
+    </linearGradient>
+  </defs>
+  <rect width="128" height="128" rx="32" fill="url(#sorbet)"/>
   <path fill="#fff" d="M64 25c3 18 9 28 28 31-19 3-25 13-28 31-3-18-9-28-28-31 19-3 25-13 28-31Zm28 52c2 9 5 14 14 16-9 2-12 7-14 16-2-9-5-14-14-16 9-2 12-7 14-16Z"/>
 </svg>

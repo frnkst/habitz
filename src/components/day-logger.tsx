@@ -59,17 +59,17 @@ export function DayLogger({
       <DrawerTrigger
         disabled={!editable}
         aria-label="Log this day"
-        className="group flex size-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#5840c7] to-[#7c5ce7] text-[#f0ecff] shadow-lg shadow-violet-950/20 transition duration-200 hover:-translate-y-0.5 hover:scale-105 active:translate-y-0 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
+        className="group flex size-9 shrink-0 items-center justify-center rounded-full bg-gradient-to-br from-[#7457d9] to-[#9b86f2] text-white shadow-lg shadow-violet-950/20 transition duration-200 hover:-translate-y-0.5 hover:scale-105 active:translate-y-0 active:scale-95 disabled:cursor-not-allowed disabled:opacity-50"
       >
         <Plus
           className="size-4.5 transition group-hover:rotate-90"
           aria-hidden="true"
         />
       </DrawerTrigger>
-      <DrawerContent className="mx-auto max-w-xl rounded-t-[2rem] border-white/80 bg-[#f8faf4]">
+      <DrawerContent className="mx-auto max-w-xl rounded-t-[2rem] border-white/85 bg-[#faf6ff]">
         <form action={action} className="flex min-h-0 flex-1 flex-col">
           <DrawerHeader className="px-5 pt-3 text-left">
-            <p className="eyebrow mb-1 text-emerald-700">
+            <p className="eyebrow mb-1 text-violet-700">
               {quickHabit ? "Quick log" : "Daily check-in"}
             </p>
             <DrawerTitle className="text-2xl font-bold tracking-[-0.045em]">
@@ -95,13 +95,13 @@ export function DayLogger({
                       htmlFor={habit.key}
                       className="flex items-center gap-2.5 text-sm font-bold"
                     >
-                      <span className="flex size-8 items-center justify-center rounded-xl bg-[#eaf9ef] text-emerald-700">
+                      <span className="flex size-8 items-center justify-center rounded-xl bg-[#eee8ff] text-violet-700">
                         <HabitIcon habit={habit} className="size-4" />
                       </span>
                       {habit.label}
                     </Label>
                     {habit.type === "duration" ? (
-                      <span className="rounded-full bg-[#f2f5ed] px-2.5 py-1 text-[10px] font-bold text-muted-foreground">
+                      <span className="rounded-full bg-[#f1edf8] px-2.5 py-1 text-[10px] font-bold text-muted-foreground">
                         {habit.target} {habit.unit} target
                       </span>
                     ) : null}
@@ -126,7 +126,7 @@ export function DayLogger({
                               : Number(event.target.value),
                           )
                         }
-                        className="h-12 min-w-0 flex-1 rounded-xl border-0 bg-[#f2f5ed] text-center text-base font-bold shadow-none"
+                        className="h-12 min-w-0 flex-1 rounded-xl border-0 bg-[#f1edf8] text-center text-base font-bold shadow-none focus-visible:ring-violet-400"
                       />
                       {[
                         { label: "-5", delta: -5 },
@@ -139,8 +139,8 @@ export function DayLogger({
                           className={cn(
                             "h-12 min-w-13 rounded-xl border-0 px-3 font-bold shadow-none",
                             delta > 0
-                              ? "bg-[#e7f5e7] text-emerald-800 hover:bg-[#d8efd9]"
-                              : "bg-[#f2f5ed] text-slate-600 hover:bg-[#e7ebe2]",
+                              ? "bg-[#d9f4e9] text-[#285e4c] hover:bg-[#c9ecde]"
+                              : "bg-[#f1edf8] text-[#6f6782] hover:bg-[#e7e1f1]",
                           )}
                           onClick={() =>
                             setValue(
@@ -148,9 +148,9 @@ export function DayLogger({
                               Math.max(
                                 0,
                                 Math.min(
-                                1440,
-                                (typeof value === "number" ? value : 0) +
-                                  delta,
+                                  1440,
+                                  (typeof value === "number" ? value : 0) +
+                                    delta,
                                 ),
                               ),
                             )
@@ -161,7 +161,7 @@ export function DayLogger({
                       ))}
                     </div>
                   ) : (
-                    <div className="grid grid-cols-3 gap-1.5 rounded-xl bg-[#f2f5ed] p-1">
+                    <div className="grid grid-cols-3 gap-1.5 rounded-xl bg-[#f1edf8] p-1">
                       {!quickHabit ? (
                         <input
                           type="hidden"
@@ -177,7 +177,7 @@ export function DayLogger({
                         value={quickHabit ? "true" : undefined}
                         disabled={pending}
                         variant={value === true ? "default" : "outline"}
-                        className={cn("h-11 rounded-lg border-0 shadow-none", value === true && "bg-[#173b2d] text-white hover:bg-[#173b2d]")}
+                        className={cn("h-11 rounded-lg border-0 shadow-none", value === true && "bg-[#bfead8] text-[#285e4c] hover:bg-[#bfead8]")}
                         onClick={() => setValue(habit.key, true)}
                       >
                         <Check /> Yes
@@ -188,7 +188,7 @@ export function DayLogger({
                         value={quickHabit ? "false" : undefined}
                         disabled={pending}
                         variant={value === false ? "destructive" : "outline"}
-                        className={cn("h-11 rounded-lg border-0 shadow-none", value === false && "bg-[#ffdfdb] text-[#8d342b] hover:bg-[#ffdfdb]")}
+                        className={cn("h-11 rounded-lg border-0 shadow-none", value === false && "bg-[#ffd9e3] text-[#8d4058] hover:bg-[#ffd9e3]")}
                         onClick={() => setValue(habit.key, false)}
                       >
                         <Minus /> No
@@ -219,11 +219,11 @@ export function DayLogger({
             ) : null}
           </div>
           {quickHabit?.type !== "boolean" ? (
-            <DrawerFooter className="border-t border-white/90 bg-white/90 px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-xl">
+            <DrawerFooter className="border-t border-violet-100/90 bg-white/90 px-5 pt-4 pb-[max(1rem,env(safe-area-inset-bottom))] backdrop-blur-xl">
               <Button
                 type="submit"
                 disabled={pending}
-                className="h-14 rounded-2xl bg-[#173b2d] text-base font-bold shadow-xl shadow-emerald-950/15 hover:bg-[#24543f]"
+                className="h-14 rounded-2xl bg-gradient-to-br from-[#7457d9] to-[#8e72e7] text-base font-bold text-white shadow-xl shadow-violet-950/20 hover:from-[#684bcf] hover:to-[#8265df]"
               >
                 {pending
                   ? "Saving…"

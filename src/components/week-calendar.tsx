@@ -8,7 +8,7 @@ import { getDayCounts, getHabitStatus } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 
 const stateStyles = {
-  open: "bg-slate-200",
+  open: "bg-[#c9c1dc]",
   missed: "bg-[#ff7f73]",
   done: "bg-[#18a56c]",
 };
@@ -44,7 +44,7 @@ export function WeekCalendar({
             href={`/?date=${date}`}
             aria-current={isSelected ? "date" : undefined}
             className={cn(
-              "group min-w-0 rounded-[1.15rem] border border-white/80 bg-white/65 px-1 py-2 text-center shadow-sm transition duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-md sm:rounded-2xl sm:p-3",
+              "group min-w-0 rounded-[1.15rem] border border-white/85 bg-white/68 px-1 py-2 text-center shadow-sm shadow-violet-950/5 transition duration-200 hover:-translate-y-0.5 hover:bg-white hover:shadow-md sm:rounded-2xl sm:p-3",
               isSelected &&
                 "border-violet-200 bg-violet-100/75 text-violet-950 shadow-md shadow-violet-900/5 ring-0 hover:bg-violet-100",
               date > today && "opacity-55",

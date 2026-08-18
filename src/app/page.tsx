@@ -50,14 +50,16 @@ export default async function Home({
       <AppHeader active="calendar" />
       <section className="mb-5 flex items-end justify-between gap-4 px-1">
         <div>
-          <p className="eyebrow text-emerald-700">Your week</p>
+          <p className="eyebrow text-violet-700">Your week</p>
           <h1 className="display-title mt-1 text-[2.7rem] leading-[1.04] sm:text-5xl">
             {motivation.calendar[0]}
             <br />
-            <span className="text-emerald-600">{motivation.calendar[1]}</span>
+            <span className="bg-gradient-to-r from-[#7457d9] to-[#a17ce6] bg-clip-text text-transparent">
+              {motivation.calendar[1]}
+            </span>
           </h1>
         </div>
-        <div className="hidden rounded-3xl bg-[#dfff9b] px-4 py-3 text-right text-[#173b2d] sm:block">
+        <div className="hidden rounded-3xl bg-[#d9f4e9] px-4 py-3 text-right text-[#285e4c] shadow-sm shadow-emerald-950/5 sm:block">
           <p className="text-2xl font-bold tracking-[-0.05em]">{loggedDays}/7</p>
           <p className="text-[10px] font-bold tracking-wider uppercase opacity-65">days logged</p>
         </div>

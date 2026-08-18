@@ -10,8 +10,8 @@ const SummaryCharts = dynamic(
     ssr: false,
     loading: () => (
       <div className="grid gap-4 lg:grid-cols-2" aria-label="Loading charts">
-        <div className="h-80 animate-pulse rounded-3xl bg-slate-100" />
-        <div className="h-80 animate-pulse rounded-3xl bg-slate-100" />
+        <div className="h-80 animate-pulse rounded-3xl bg-violet-100/65" />
+        <div className="h-80 animate-pulse rounded-3xl bg-violet-100/65" />
       </div>
     ),
   },
