@@ -30,7 +30,15 @@ registerECharts([
   TooltipComponent,
 ]);
 
-const palette = ["#1fac72", "#a9c83d", "#173b2d", "#4fc3a1", "#d1e85b"];
+const lineColors = ["#7055d6", "#e66f8a", "#569fd8"];
+const tooltipStyle = {
+  backgroundColor: "rgba(35, 25, 68, 0.94)",
+  borderWidth: 0,
+  padding: [10, 12],
+  textStyle: { color: "#fff", fontWeight: 600 },
+  extraCssText:
+    "border-radius: 12px; box-shadow: 0 12px 28px rgba(45, 29, 93, 0.22);",
+};
 const pieColors = [
   {
     face: {
@@ -109,73 +117,190 @@ function Chart({
 export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
   const barOption: EChartsCoreOption = {
     aria: { enabled: true },
-    color: ["#1fac72", "#dfe8df"],
-    grid: { left: 44, right: 16, top: 38, bottom: 42 },
-    legend: { top: 0, textStyle: { color: "#64748b" } },
-    tooltip: { trigger: "axis" },
+    animationDuration: 900,
+    animationEasing: "cubicOut",
+    grid: { left: 42, right: 14, top: 52, bottom: 40 },
+    legend: {
+      top: 0,
+      data: ["Logged", "Target"],
+      icon: "circle",
+      itemWidth: 9,
+      itemHeight: 9,
+      textStyle: { color: "#6b647d", fontWeight: 600 },
+    },
+    tooltip: {
+      ...tooltipStyle,
+      trigger: "axis",
+      axisPointer: {
+        type: "shadow",
+        shadowStyle: { color: "rgba(112, 85, 214, 0.07)" },
+      },
+    },
     xAxis: {
       type: "category",
       data: summary.durations.map((item) => item.label),
-      axisLabel: { color: "#64748b", interval: 0 },
-      axisLine: { lineStyle: { color: "#e2e8f0" } },
+      axisLabel: { color: "#6b647d", fontWeight: 600, interval: 0 },
+      axisLine: { show: false },
+      axisTick: { show: false },
     },
     yAxis: {
       type: "value",
-      axisLabel: { color: "#64748b" },
-      splitLine: { lineStyle: { color: "#eef2f1" } },
+      axisLabel: { color: "#9a93aa" },
+      axisLine: { show: false },
+      axisTick: { show: false },
+      splitLine: {
+        lineStyle: { color: "#ebe7f4", type: "dashed", width: 1 },
+      },
     },
     series: [
-      {
-        name: "Logged",
-        type: "bar",
-        data: summary.durations.map((item) => item.total),
-        barMaxWidth: 34,
-        itemStyle: { borderRadius: [8, 8, 0, 0] },
-      },
       {
         name: "Target",
         type: "bar",
         data: summary.durations.map((item) => item.targetTotal),
-        barMaxWidth: 34,
-        itemStyle: { borderRadius: [8, 8, 0, 0] },
+        barMaxWidth: 42,
+        itemStyle: {
+          color: {
+            type: "linear",
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              { offset: 0, color: "#e3dcf7" },
+              { offset: 1, color: "#f1edf8" },
+            ],
+          },
+          borderRadius: [12, 12, 4, 4],
+        },
+        z: 1,
+      },
+      {
+        name: "Logged",
+        type: "bar",
+        data: summary.durations.map((item) => item.total),
+        barMaxWidth: 25,
+        barGap: "-100%",
+        label: {
+          show: true,
+          position: "top",
+          color: "#55418f",
+          fontWeight: 800,
+          fontSize: 11,
+        },
+        itemStyle: {
+          color: {
+            type: "linear",
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              { offset: 0, color: "#9b86f2" },
+              { offset: 0.55, color: "#7558d8" },
+              { offset: 1, color: "#5840b5" },
+            ],
+          },
+          borderRadius: [12, 12, 4, 4],
+          shadowBlur: 12,
+          shadowColor: "rgba(88, 64, 181, 0.24)",
+          shadowOffsetY: 5,
+        },
+        z: 2,
       },
     ],
   };
 
   const lineOption: EChartsCoreOption = {
     aria: { enabled: true },
-    color: palette,
-    grid: { left: 44, right: 18, top: 42, bottom: 42 },
-    legend: { top: 0, type: "scroll", textStyle: { color: "#64748b" } },
-    tooltip: { trigger: "axis" },
+    animationDuration: 1000,
+    animationEasing: "cubicOut",
+    color: lineColors,
+    grid: { left: 42, right: 18, top: 52, bottom: 40 },
+    legend: {
+      top: 0,
+      type: "scroll",
+      icon: "circle",
+      itemWidth: 9,
+      itemHeight: 9,
+      textStyle: { color: "#6b647d", fontWeight: 600 },
+    },
+    tooltip: {
+      ...tooltipStyle,
+      trigger: "axis",
+      axisPointer: {
+        type: "line",
+        lineStyle: { color: "#b5a7dd", type: "dashed" },
+      },
+    },
     xAxis: {
       type: "category",
+      boundaryGap: false,
       data: summary.trends.map((point) => formatTrendLabel(point.label)),
-      axisLabel: { color: "#64748b", hideOverlap: true },
-      axisLine: { lineStyle: { color: "#e2e8f0" } },
+      axisLabel: { color: "#6b647d", fontWeight: 600, hideOverlap: true },
+      axisLine: { show: false },
+      axisTick: { show: false },
     },
     yAxis: {
       type: "value",
-      axisLabel: { color: "#64748b" },
-      splitLine: { lineStyle: { color: "#eef2f1" } },
+      axisLabel: { color: "#9a93aa" },
+      axisLine: { show: false },
+      axisTick: { show: false },
+      splitLine: {
+        lineStyle: { color: "#ebe7f4", type: "dashed", width: 1 },
+      },
     },
-    series: summary.durations.map((habit, index) => ({
-      name: habit.label,
-      type: "line",
-      smooth: true,
-      showSymbol: summary.trends.length < 40,
-      symbolSize: 7,
-      lineStyle: { width: 3 },
-      areaStyle: { opacity: index === 0 ? 0.08 : 0 },
-      data: summary.trends.map((point) => point.values[habit.key] ?? 0),
-    })),
+    series: summary.durations.map((habit, index) => {
+      const color = lineColors[index % lineColors.length];
+      return {
+        name: habit.label,
+        type: "line",
+        smooth: 0.42,
+        connectNulls: true,
+        showSymbol: summary.trends.length < 40,
+        symbol: "circle",
+        symbolSize: 8,
+        itemStyle: {
+          color,
+          borderColor: "#fff",
+          borderWidth: 3,
+          shadowBlur: 8,
+          shadowColor: `${color}55`,
+        },
+        lineStyle: {
+          width: 3.5,
+          color,
+          cap: "round",
+          shadowBlur: 10,
+          shadowColor: `${color}38`,
+          shadowOffsetY: 4,
+        },
+        areaStyle: {
+          color: {
+            type: "linear",
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              { offset: 0, color: `${color}35` },
+              { offset: 1, color: `${color}02` },
+            ],
+          },
+        },
+        emphasis: {
+          focus: "series",
+          lineStyle: { width: 4.5 },
+        },
+        data: summary.trends.map((point) => point.values[habit.key] ?? 0),
+      };
+    }),
   };
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       {summary.durations.length ? (
         <>
-          <article className="surface-card rounded-[1.65rem] p-4 sm:p-5">
+          <article className="surface-card overflow-hidden rounded-[1.65rem] border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/65 p-4 sm:p-5">
             <h3 className="font-semibold tracking-[-0.02em]">Minutes vs target</h3>
             <p className="mt-1 text-xs text-muted-foreground">
               Total progress for the selected period
@@ -185,7 +310,7 @@ export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
               label="Bar chart comparing logged minutes with target minutes"
             />
           </article>
-          <article className="surface-card rounded-[1.65rem] p-4 sm:p-5">
+          <article className="surface-card overflow-hidden rounded-[1.65rem] border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/65 p-4 sm:p-5">
             <h3 className="font-semibold tracking-[-0.02em]">Progress over time</h3>
             <p className="mt-1 text-xs text-muted-foreground">
               Daily or monthly movement by habit

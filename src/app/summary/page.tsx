@@ -182,45 +182,6 @@ export default async function SummaryPage({
         </h2>
         <ChartLoader summary={summary} />
       </section>
-
-      <details className="surface-card mt-6 rounded-[1.35rem] p-4">
-        <summary className="cursor-pointer text-sm font-semibold">
-          Accessible data table
-        </summary>
-        <div className="mt-4 overflow-x-auto">
-          <table className="w-full text-left text-sm">
-            <thead className="text-xs text-muted-foreground">
-              <tr>
-                <th className="pb-2 pr-6">Habit</th>
-                <th className="pb-2 pr-6">Logged</th>
-                <th className="pb-2">Target / eligible</th>
-              </tr>
-            </thead>
-            <tbody>
-              {summary.durations.map((habit) => (
-                <tr key={habit.key} className="border-t">
-                  <td className="py-2 pr-6">{habit.label}</td>
-                  <td className="py-2 pr-6">
-                    {habit.total} {habit.unit}
-                  </td>
-                  <td className="py-2">
-                    {habit.targetTotal} {habit.unit}
-                  </td>
-                </tr>
-              ))}
-              {summary.booleans.map((habit) => (
-                <tr key={habit.key} className="border-t">
-                  <td className="py-2 pr-6">{habit.label}</td>
-                  <td className="py-2 pr-6">{habit.done} done</td>
-                  <td className="py-2">
-                    {habit.done + habit.missed + habit.open} eligible
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </details>
     </main>
   );
 }

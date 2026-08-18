@@ -41,6 +41,10 @@ export function DayDetail({
   const values = entry?.habit_values ?? {};
   const counts = getDayCounts(habits, values);
   const completed = counts.done;
+  const orderedHabits = [
+    ...habits.filter((habit) => habit.type === "duration"),
+    ...habits.filter((habit) => habit.type === "boolean"),
+  ];
 
   return (
     <section className="mt-7 pb-20 sm:pb-0">
@@ -75,7 +79,7 @@ export function DayDetail({
         </p>
       ) : null}
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
-        {habits.map((habit) => {
+        {orderedHabits.map((habit) => {
           const value = values[habit.key];
           const status = getHabitStatus(habit, value);
           const card = (
