@@ -41,32 +41,12 @@ const tooltipStyle = {
 };
 const pieColors = [
   {
-    face: {
-      type: "linear",
-      x: 0,
-      y: 0,
-      x2: 0,
-      y2: 1,
-      colorStops: [
-        { offset: 0, color: "#9a86f4" },
-        { offset: 1, color: "#6247c8" },
-      ],
-    },
-    depth: "#49339e",
+    face: "#18a56c",
+    depth: "#0f714a",
   },
   {
-    face: {
-      type: "linear",
-      x: 0,
-      y: 0,
-      x2: 0,
-      y2: 1,
-      colorStops: [
-        { offset: 0, color: "#ff9a9f" },
-        { offset: 1, color: "#d85d69" },
-      ],
-    },
-    depth: "#a93e49",
+    face: "#ff7f73",
+    depth: "#bd5148",
   },
   {
     face: {
