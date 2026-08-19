@@ -1,6 +1,10 @@
 import type { DailyEntry } from "@/lib/database.types";
 import { formatDate } from "@/lib/dates";
-import type { HabitDefinition } from "@/lib/habits";
+import {
+  getHabitsForDate,
+  type HabitDefinition,
+  type HabitValues,
+} from "@/lib/habits";
 import { getDayCounts, getHabitStatus } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
@@ -29,21 +33,25 @@ export function DayDetail({
   date,
   entry,
   habits,
+  previousValues,
   editable,
   quickHabitKey,
 }: {
   date: string;
   entry?: DailyEntry;
   habits: HabitDefinition[];
+  previousValues: HabitValues;
   editable: boolean;
   quickHabitKey?: string;
 }) {
   const values = entry?.habit_values ?? {};
-  const counts = getDayCounts(habits, values);
+  const activeHabits = getHabitsForDate(habits, date);
+  const counts = getDayCounts(activeHabits, values);
   const completed = counts.done;
   const orderedHabits = [
-    ...habits.filter((habit) => habit.type === "duration"),
-    ...habits.filter((habit) => habit.type === "boolean"),
+    ...activeHabits.filter((habit) => habit.type === "duration"),
+    ...activeHabits.filter((habit) => habit.type === "measurement"),
+    ...activeHabits.filter((habit) => habit.type === "boolean"),
   ];
 
   return (
@@ -61,8 +69,9 @@ export function DayDetail({
               <DayLogger
                 key={`${date}-${entry?.updated_at ?? "new"}-${quickHabitKey ?? "full"}`}
                 date={date}
-                habits={habits}
+                habits={activeHabits}
                 values={values}
+                previousValues={previousValues}
                 editable={editable}
                 quickHabitKey={quickHabitKey}
               />
@@ -70,7 +79,7 @@ export function DayDetail({
           </div>
         </div>
         <Badge variant="secondary" className="rounded-full border border-violet-100/90 bg-white/72 px-3 py-1.5 text-xs font-bold text-violet-700 shadow-sm shadow-violet-950/5">
-          {completed}/{habits.length} complete
+          {completed}/{activeHabits.length} complete
         </Badge>
       </div>
       {editable ? (
@@ -113,13 +122,21 @@ export function DayDetail({
               <Link
                 key={habit.key}
                 href={`/?date=${date}&quick=${habit.key}`}
-                className="group min-w-0 rounded-[1.35rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2"
+                className={cn(
+                  "group min-w-0 rounded-[1.35rem] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 focus-visible:ring-offset-2",
+                  habit.type === "measurement" && "col-span-2",
+                )}
                 aria-label={`Quick log ${habit.label}`}
               >
                 {card}
               </Link>
             ) : (
-              <div key={habit.key}>{card}</div>
+              <div
+                key={habit.key}
+                className={cn(habit.type === "measurement" && "col-span-2")}
+              >
+                {card}
+              </div>
             );
         })}
       </div>

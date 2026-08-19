@@ -319,6 +319,120 @@ export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
           </article>
         </>
       ) : null}
+      {summary.measurements.map((measurement) => {
+        const option: EChartsCoreOption = {
+          aria: { enabled: true },
+          animationDuration: 1000,
+          animationEasing: "cubicOut",
+          grid: { left: 48, right: 20, top: 28, bottom: 40 },
+          tooltip: {
+            ...tooltipStyle,
+            trigger: "axis",
+            valueFormatter: (value: number) =>
+              `${value} ${measurement.unit}`,
+            axisPointer: {
+              type: "line",
+              lineStyle: { color: "#b5a7dd", type: "dashed" },
+            },
+          },
+          xAxis: {
+            type: "category",
+            boundaryGap: false,
+            data: measurement.points.map((point) =>
+              formatTrendLabel(point.label),
+            ),
+            axisLabel: {
+              color: "#6b647d",
+              fontWeight: 600,
+              hideOverlap: true,
+            },
+            axisLine: { show: false },
+            axisTick: { show: false },
+          },
+          yAxis: {
+            type: "value",
+            scale: true,
+            axisLabel: {
+              color: "#9a93aa",
+              formatter: `{value} ${measurement.unit}`,
+            },
+            axisLine: { show: false },
+            axisTick: { show: false },
+            splitLine: {
+              lineStyle: { color: "#ebe7f4", type: "dashed", width: 1 },
+            },
+          },
+          series: [
+            {
+              name: measurement.label,
+              type: "line",
+              smooth: 0.45,
+              data: measurement.points.map((point) => point.value),
+              showSymbol: true,
+              symbol: "circle",
+              symbolSize: 9,
+              itemStyle: {
+                color: "#7457d9",
+                borderColor: "#fff",
+                borderWidth: 3,
+                shadowBlur: 9,
+                shadowColor: "rgba(116, 87, 217, 0.35)",
+              },
+              lineStyle: {
+                width: 4,
+                color: "#7457d9",
+                cap: "round",
+                shadowBlur: 12,
+                shadowColor: "rgba(116, 87, 217, 0.25)",
+                shadowOffsetY: 4,
+              },
+              areaStyle: {
+                color: {
+                  type: "linear",
+                  x: 0,
+                  y: 0,
+                  x2: 0,
+                  y2: 1,
+                  colorStops: [
+                    { offset: 0, color: "rgba(155, 134, 242, 0.38)" },
+                    { offset: 1, color: "rgba(217, 244, 233, 0.08)" },
+                  ],
+                },
+              },
+            },
+          ],
+        };
+
+        return (
+          <article
+            key={measurement.key}
+            className="surface-card overflow-hidden rounded-[1.65rem] border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/65 p-4 sm:p-5 lg:col-span-2"
+          >
+            <div className="flex items-end justify-between gap-4">
+              <div>
+                <h3 className="font-semibold tracking-[-0.02em]">
+                  {measurement.label} over time
+                </h3>
+                <p className="mt-1 text-xs text-muted-foreground">
+                  Daily logged measurements
+                </p>
+              </div>
+              {measurement.latest != null ? (
+                <p className="text-right text-xl font-bold tracking-[-0.04em] text-violet-700">
+                  {measurement.latest}
+                  <span className="ml-1 text-xs font-semibold text-muted-foreground">
+                    {measurement.unit}
+                  </span>
+                </p>
+              ) : null}
+            </div>
+            <Chart
+              option={option}
+              label={`Line chart for ${measurement.label} over time`}
+            />
+          </article>
+        );
+      })}
       {summary.booleans.map((habit) => {
         const values = [
           { name: "Done", value: habit.done },

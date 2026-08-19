@@ -4,7 +4,7 @@ import { PeriodNavigation } from "@/components/period-navigation";
 import { WeekCalendar } from "@/components/week-calendar";
 import { requireOwner } from "@/lib/auth";
 import { getAppConfig } from "@/lib/config";
-import { getEntries } from "@/lib/data";
+import { getEntries, getPreviousHabitValues } from "@/lib/data";
 import {
   enumerateDates,
   formatPeriodLabel,
@@ -14,6 +14,7 @@ import {
   todayInTimeZone,
 } from "@/lib/dates";
 import { getMotivation } from "@/lib/motivation";
+import { getHabitsForDate } from "@/lib/habits";
 
 export const dynamic = "force-dynamic";
 
@@ -31,17 +32,26 @@ export default async function Home({
     requestedDate && isDateKey(requestedDate) ? requestedDate : today;
   const range = getPeriodRange(anchor, "week", config.weekStart);
   const dates = enumerateDates(range);
-  const entries = await getEntries(user.id, range.start, range.end);
+  const measurementKeys = config.habits
+    .filter((habit) => habit.type === "measurement")
+    .map((habit) => habit.key);
+  const [entries, previousValues] = await Promise.all([
+    getEntries(user.id, range.start, range.end),
+    getPreviousHabitValues(user.id, anchor, measurementKeys),
+  ]);
   const selectedEntry = entries.find((entry) => entry.entry_date === anchor);
   const previous = shiftPeriod(range.start, "week", -1);
   const next = shiftPeriod(range.start, "week", 1);
-  const quickHabitKey = config.habits.some(
+  const activeHabits = getHabitsForDate(config.habits, anchor);
+  const quickHabitKey = activeHabits.some(
     (habit) => habit.key === params.quick,
   )
     ? params.quick
     : undefined;
   const loggedDays = entries.filter((entry) =>
-    Object.values(entry.habit_values).some((value) => value !== null),
+    getHabitsForDate(config.habits, entry.entry_date).some(
+      (habit) => entry.habit_values[habit.key] != null,
+    ),
   ).length;
   const motivation = getMotivation(entries, config.habits, dates, today);
 
@@ -85,6 +95,7 @@ export default async function Home({
         date={anchor}
         entry={selectedEntry}
         habits={config.habits}
+        previousValues={previousValues}
         editable={anchor <= today}
         quickHabitKey={quickHabitKey}
       />

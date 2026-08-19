@@ -7,6 +7,7 @@ import {
   GlassWater,
   Music2,
   MonitorOff,
+  Scale,
 } from "lucide-react";
 
 import type { HabitDefinition } from "@/lib/habits";
@@ -19,6 +20,7 @@ const icons = {
   dumbbell: Dumbbell,
   "glass-water": GlassWater,
   piano: Music2,
+  scale: Scale,
   "screen-off": MonitorOff,
 } as const;
 

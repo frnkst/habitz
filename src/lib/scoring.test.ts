@@ -120,4 +120,96 @@ describe("habit scoring", () => {
       open: 1,
     });
   });
+
+  it("excludes rest days from boolean totals and denominators", () => {
+    const gym: HabitDefinition = {
+      key: "gym",
+      label: "Gym",
+      type: "boolean",
+      icon: "dumbbell",
+      excludedWeekdays: [2],
+    };
+    const dates = ["2026-08-17", "2026-08-18", "2026-08-19"];
+    const summary = summarizeEntries(
+      [
+        entry("2026-08-17", { gym: true }),
+        entry("2026-08-18", { gym: false }),
+      ],
+      [gym],
+      dates,
+      dates,
+      "week",
+    );
+
+    expect(summary.booleans[0]).toEqual({
+      key: "gym",
+      label: "Gym",
+      done: 1,
+      missed: 0,
+      open: 1,
+    });
+  });
+
+  it("summarizes measurement changes over time", () => {
+    const weight: HabitDefinition = {
+      key: "weight",
+      label: "Weight",
+      type: "measurement",
+      unit: "kg",
+      min: 20,
+      max: 300,
+      step: 0.1,
+      icon: "scale",
+    };
+    const dates = ["2026-08-17", "2026-08-18", "2026-08-19"];
+    const summary = summarizeEntries(
+      [
+        entry("2026-08-17", { weight: 72.4 }),
+        entry("2026-08-19", { weight: 72.1 }),
+      ],
+      [weight],
+      dates,
+      dates,
+      "week",
+    );
+
+    expect(getHabitStatus(weight, null)).toBe("open");
+    expect(getHabitStatus(weight, 72.4)).toBe("done");
+    expect(summary.measurements[0]).toEqual({
+      key: "weight",
+      label: "Weight",
+      unit: "kg",
+      latest: 72.1,
+      change: -0.3,
+      points: [
+        { label: "2026-08-17", value: 72.4 },
+        { label: "2026-08-19", value: 72.1 },
+      ],
+    });
+  });
+
+  it("does not report a weight change from one measurement", () => {
+    const weight: HabitDefinition = {
+      key: "weight",
+      label: "Weight",
+      type: "measurement",
+      unit: "kg",
+      min: 20,
+      max: 300,
+      step: 0.1,
+      icon: "scale",
+    };
+    const summary = summarizeEntries(
+      [entry("2026-08-17", { weight: 72.4 })],
+      [weight],
+      ["2026-08-17"],
+      ["2026-08-17"],
+      "week",
+    );
+
+    expect(summary.measurements[0]).toMatchObject({
+      latest: 72.4,
+      change: null,
+    });
+  });
 });

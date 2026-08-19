@@ -79,11 +79,30 @@ Boolean habit:
   "key": "example-boolean",
   "label": "Daily choice",
   "type": "boolean",
-  "icon": "check"
+  "icon": "check",
+  "excludedWeekdays": [2]
 }
 ```
 
-Supported icons are `activity`, `brain`, `candy`, `check`, `dumbbell`, `glass-water`, `piano`, and `screen-off`.
+Measurement habit:
+
+```json
+{
+  "key": "weight",
+  "label": "Weight",
+  "type": "measurement",
+  "unit": "kg",
+  "min": 20,
+  "max": 300,
+  "step": 0.1,
+  "icon": "scale"
+}
+```
+
+`excludedWeekdays` is optional and removes a habit from logging and scoring on
+the listed days. Weekdays use `0` for Sunday through `6` for Saturday.
+
+Supported icons are `activity`, `brain`, `candy`, `check`, `dumbbell`, `glass-water`, `piano`, `scale`, and `screen-off`.
 
 ## Optional fully local Supabase
 

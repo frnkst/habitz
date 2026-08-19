@@ -47,6 +47,10 @@ export function isDateKey(value: string): boolean {
   }
 }
 
+export function getWeekday(dateKey: string): number {
+  return dateFromKey(dateKey).getUTCDay();
+}
+
 export function todayInTimeZone(
   timezone: string,
   now: Date = new Date(),

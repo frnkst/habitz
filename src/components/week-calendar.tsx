@@ -3,7 +3,7 @@ import Link from "next/link";
 
 import type { DailyEntry } from "@/lib/database.types";
 import { formatDate } from "@/lib/dates";
-import type { HabitDefinition } from "@/lib/habits";
+import { getHabitsForDate, type HabitDefinition } from "@/lib/habits";
 import { getDayCounts, getHabitStatus } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 
@@ -33,7 +33,8 @@ export function WeekCalendar({
       {dates.map((date) => {
         const entry = entryByDate.get(date);
         const values = entry?.habit_values ?? {};
-        const counts = getDayCounts(habits, values);
+        const activeHabits = getHabitsForDate(habits, date);
+        const counts = getDayCounts(activeHabits, values);
         const complete = counts.done;
         const isSelected = date === selectedDate;
         const isToday = date === today;
@@ -65,8 +66,8 @@ export function WeekCalendar({
             >
               {formatDate(date, { day: "numeric" })}
             </p>
-            <div className="mx-auto mt-2 grid w-fit grid-cols-3 gap-1">
-              {habits.map((habit) => {
+            <div className="mx-auto mt-2 grid w-fit grid-cols-4 gap-1">
+              {activeHabits.map((habit) => {
                 const status = getHabitStatus(habit, values[habit.key]);
                 return (
                   <span
@@ -84,14 +85,14 @@ export function WeekCalendar({
               "mt-2 hidden items-center justify-center gap-1 text-[11px] font-semibold text-muted-foreground sm:flex",
               isSelected && "text-violet-600",
             )}>
-              {complete === habits.length ? (
+              {complete === activeHabits.length ? (
                 <Check className="size-3 text-emerald-600" />
-              ) : counts.open === habits.length ? (
+              ) : counts.open === activeHabits.length ? (
                 <Circle className="size-3" />
               ) : (
                 <Minus className="size-3" />
               )}
-              {complete}/{habits.length}
+              {complete}/{activeHabits.length}
             </div>
           </Link>
         );

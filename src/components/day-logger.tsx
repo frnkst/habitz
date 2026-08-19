@@ -34,19 +34,21 @@ export function DayLogger({
   date,
   habits,
   values: initialValues,
+  previousValues,
   editable,
   quickHabitKey,
 }: {
   date: string;
   habits: HabitDefinition[];
   values: HabitValues;
+  previousValues: HabitValues;
   editable: boolean;
   quickHabitKey?: string;
 }) {
   const quickHabit = habits.find((habit) => habit.key === quickHabitKey);
   const visibleHabits = quickHabit ? [quickHabit] : habits;
   const [values, setValues] = useState<HabitValues>(() =>
-    getQuickLogValues(initialValues, habits, quickHabitKey),
+    getQuickLogValues(initialValues, habits, quickHabitKey, previousValues),
   );
   const [state, action, pending] = useActionState(saveDailyEntry, initialState);
 
@@ -104,18 +106,24 @@ export function DayLogger({
                       <span className="rounded-full bg-[#f1edf8] px-2.5 py-1 text-[10px] font-bold text-muted-foreground">
                         {habit.target} {habit.unit} target
                       </span>
+                    ) : habit.type === "measurement" ? (
+                      <span className="rounded-full bg-[#f1edf8] px-2.5 py-1 text-[10px] font-bold text-muted-foreground">
+                        {typeof previousValues[habit.key] === "number"
+                          ? `Previous ${previousValues[habit.key]} ${habit.unit}`
+                          : habit.unit}
+                      </span>
                     ) : null}
                   </div>
-                  {habit.type === "duration" ? (
+                  {habit.type !== "boolean" ? (
                     <div className="flex gap-2">
                       <Input
                         id={habit.key}
                         name={habit.key}
                         type="number"
                         inputMode="numeric"
-                        min={0}
-                        max={1440}
-                        step={1}
+                        min={habit.type === "duration" ? 0 : habit.min}
+                        max={habit.type === "duration" ? 1440 : habit.max}
+                        step={habit.type === "duration" ? 1 : habit.step}
                         placeholder="0"
                         value={typeof value === "number" ? value : ""}
                         onChange={(event) =>
@@ -128,13 +136,23 @@ export function DayLogger({
                         }
                         className="h-12 min-w-0 flex-1 rounded-xl border-0 bg-[#f1edf8] text-center text-base font-bold shadow-none focus-visible:ring-violet-400"
                       />
-                      {[
-                        { label: "-5", delta: -5 },
-                        { label: "+5", delta: 5 },
-                      ].map(({ label, delta }) => (
+                      {(habit.type === "duration"
+                        ? [
+                            { label: "-5", delta: -5 },
+                            { label: "+5", delta: 5 },
+                          ]
+                        : [
+                            { label: `-${habit.step}`, delta: -habit.step },
+                            { label: `+${habit.step}`, delta: habit.step },
+                          ]
+                      ).map(({ label, delta }) => (
                         <Button
                           key={delta}
                           type="button"
+                          disabled={
+                            habit.type === "measurement" &&
+                            typeof value !== "number"
+                          }
                           variant="outline"
                           className={cn(
                             "h-12 min-w-13 rounded-xl border-0 px-3 font-bold shadow-none",
@@ -145,14 +163,26 @@ export function DayLogger({
                           onClick={() =>
                             setValue(
                               habit.key,
-                              Math.max(
-                                0,
-                                Math.min(
-                                  1440,
-                                  (typeof value === "number" ? value : 0) +
-                                    delta,
-                                ),
-                              ),
+                              habit.type === "duration"
+                                ? Math.max(
+                                    0,
+                                    Math.min(
+                                      1440,
+                                      (typeof value === "number" ? value : 0) +
+                                        delta,
+                                    ),
+                                  )
+                                : Number(
+                                    Math.max(
+                                      habit.min,
+                                      Math.min(
+                                        habit.max,
+                                        (typeof value === "number"
+                                          ? value
+                                          : habit.min) + delta,
+                                      ),
+                                    ).toFixed(4),
+                                  ),
                             )
                           }
                         >

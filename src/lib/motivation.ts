@@ -1,5 +1,5 @@
 import type { DailyEntry } from "@/lib/database.types";
-import type { HabitDefinition } from "@/lib/habits";
+import { getHabitsForDate, type HabitDefinition } from "@/lib/habits";
 import { getDayCounts } from "@/lib/scoring";
 
 export type Motivation = {
@@ -100,17 +100,19 @@ export function getMotivation(
   const entryByDate = new Map(entries.map((entry) => [entry.entry_date, entry]));
   let done = 0;
   let logged = 0;
+  let possible = 0;
 
   for (const date of eligibleDates) {
+    const activeHabits = getHabitsForDate(habits, date);
     const counts = getDayCounts(
-      habits,
+      activeHabits,
       entryByDate.get(date)?.habit_values ?? {},
     );
     done += counts.done;
     logged += counts.done + counts.missed;
+    possible += activeHabits.length;
   }
 
-  const possible = eligibleDates.length * habits.length;
   const completion = possible > 0 ? done / possible : 0;
   const scoreBand =
     logged === 0

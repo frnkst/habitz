@@ -172,6 +172,29 @@ export default async function SummaryPage({
               </p>
             </article>
           ))}
+          {summary.measurements.map((habit) => (
+            <article
+              key={habit.key}
+              className="surface-card rounded-[1.35rem] p-4"
+            >
+              <p className="truncate text-xs font-medium text-muted-foreground">
+                {habit.label}
+              </p>
+              <p className="mt-2 text-2xl font-bold tracking-[-0.05em]">
+                {habit.latest ?? "—"}
+                {habit.latest != null ? (
+                  <span className="ml-1 text-xs font-medium text-muted-foreground">
+                    {habit.unit}
+                  </span>
+                ) : null}
+              </p>
+              <p className="mt-1 text-[11px] text-muted-foreground">
+                {habit.change == null
+                  ? "No change yet"
+                  : `${habit.change > 0 ? "+" : ""}${habit.change} ${habit.unit} this period`}
+              </p>
+            </article>
+          ))}
         </div>
       </section>
 

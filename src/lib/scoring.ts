@@ -4,6 +4,7 @@ import type {
   HabitValue,
   HabitValues,
 } from "@/lib/habits";
+import { isHabitActiveOnDate } from "@/lib/habits";
 
 export type HabitStatus = "open" | "missed" | "done";
 
@@ -16,6 +17,9 @@ export function getHabitStatus(
   }
   if (habit.type === "boolean") {
     return value === true ? "done" : "missed";
+  }
+  if (habit.type === "measurement") {
+    return typeof value === "number" ? "done" : "missed";
   }
   if (typeof value !== "number" || value < habit.target) {
     return "missed";
@@ -32,6 +36,9 @@ export function getProgress(
   }
   if (habit.type === "boolean") {
     return value === true ? 1 : 0;
+  }
+  if (habit.type === "measurement") {
+    return typeof value === "number" ? 1 : 0;
   }
   return typeof value === "number" ? value / habit.target : 0;
 }
@@ -67,6 +74,15 @@ export type BooleanSummary = {
   open: number;
 };
 
+export type MeasurementSummary = {
+  key: string;
+  label: string;
+  unit: string;
+  latest: number | null;
+  change: number | null;
+  points: Array<{ label: string; value: number }>;
+};
+
 export type TrendPoint = {
   label: string;
   values: Record<string, number>;
@@ -75,6 +91,7 @@ export type TrendPoint = {
 export type PeriodSummary = {
   durations: DurationSummary[];
   booleans: BooleanSummary[];
+  measurements: MeasurementSummary[];
   trends: TrendPoint[];
 };
 
@@ -89,7 +106,13 @@ export function summarizeEntries(
   const durations = habits
     .filter((habit) => habit.type === "duration")
     .map((habit) => {
-      const total = eligibleDates.reduce((sum, date) => {
+      const scheduledEligibleDates = eligibleDates.filter((date) =>
+        isHabitActiveOnDate(habit, date),
+      );
+      const scheduledPeriodDates = periodDates.filter((date) =>
+        isHabitActiveOnDate(habit, date),
+      );
+      const total = scheduledEligibleDates.reduce((sum, date) => {
         const value = entryByDate.get(date)?.habit_values[habit.key];
         return sum + (typeof value === "number" ? value : 0);
       }, 0);
@@ -98,7 +121,7 @@ export function summarizeEntries(
         label: habit.label,
         unit: habit.unit,
         total,
-        targetTotal: habit.target * periodDates.length,
+        targetTotal: habit.target * scheduledPeriodDates.length,
       };
     });
 
@@ -109,6 +132,7 @@ export function summarizeEntries(
       let missed = 0;
       let open = 0;
       for (const date of eligibleDates) {
+        if (!isHabitActiveOnDate(habit, date)) continue;
         const value = entryByDate.get(date)?.habit_values[habit.key];
         if (value === true) done += 1;
         else if (value === false) missed += 1;
@@ -117,13 +141,41 @@ export function summarizeEntries(
       return { key: habit.key, label: habit.label, done, missed, open };
     });
 
+  const measurements = habits
+    .filter((habit) => habit.type === "measurement")
+    .map((habit) => {
+      const points = eligibleDates.flatMap((date) => {
+        if (!isHabitActiveOnDate(habit, date)) return [];
+        const value = entryByDate.get(date)?.habit_values[habit.key];
+        return typeof value === "number" ? [{ label: date, value }] : [];
+      });
+      const first = points[0]?.value;
+      const latest = points.at(-1)?.value;
+      return {
+        key: habit.key,
+        label: habit.label,
+        unit: habit.unit,
+        latest: latest ?? null,
+        change:
+          points.length >= 2 && first !== undefined && latest !== undefined
+            ? Number((latest - first).toFixed(4))
+            : null,
+        points,
+      };
+    });
+
   const grouped = new Map<string, Record<string, number>>();
   for (const date of eligibleDates) {
     const group = period === "year" ? date.slice(0, 7) : date;
     const values = grouped.get(group) ?? {};
     const entry = entryByDate.get(date);
     for (const habit of habits) {
-      if (habit.type !== "duration") continue;
+      if (
+        habit.type !== "duration" ||
+        !isHabitActiveOnDate(habit, date)
+      ) {
+        continue;
+      }
       const value = entry?.habit_values[habit.key];
       values[habit.key] =
         (values[habit.key] ?? 0) + (typeof value === "number" ? value : 0);
@@ -134,6 +186,7 @@ export function summarizeEntries(
   return {
     durations,
     booleans,
+    measurements,
     trends: Array.from(grouped, ([label, values]) => ({ label, values })),
   };
 }

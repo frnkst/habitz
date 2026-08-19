@@ -58,4 +58,21 @@ describe("motivation", () => {
         .calendar,
     ).toEqual(["Every effort,", "still counts."]);
   });
+
+  it("does not count an excluded weekday against completion", () => {
+    const scheduledHabits: HabitDefinition[] = [
+      {
+        ...habits[0],
+        excludedWeekdays: [2],
+      },
+    ];
+    expect(
+      getMotivation(
+        [entry("2026-08-17", 15), entry("2026-08-18", 0)],
+        scheduledHabits,
+        week,
+        "2026-08-18",
+      ).calendar,
+    ).toEqual(["On a roll,", "stay steady."]);
+  });
 });

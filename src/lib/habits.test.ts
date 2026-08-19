@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 
 import {
+  getHabitsForDate,
   habitConfigSchema,
   getQuickLogValues,
   mergeHabitValues,
@@ -25,12 +26,39 @@ const habits: HabitDefinition[] = [
     icon: "check",
   },
 ];
+const weight: HabitDefinition = {
+  key: "weight",
+  label: "Weight",
+  type: "measurement",
+  unit: "kg",
+  min: 20,
+  max: 300,
+  step: 0.1,
+  icon: "scale",
+};
 
 describe("habit configuration", () => {
   it("rejects duplicate stable keys", () => {
     expect(habitConfigSchema.safeParse([habits[0], habits[0]]).success).toBe(
       false,
     );
+  });
+
+  it("validates and applies weekday exclusions", () => {
+    const gym: HabitDefinition = {
+      key: "gym",
+      label: "Gym",
+      type: "boolean",
+      icon: "dumbbell",
+      excludedWeekdays: [2],
+    };
+
+    expect(getHabitsForDate([gym], "2026-08-17")).toEqual([gym]);
+    expect(getHabitsForDate([gym], "2026-08-18")).toEqual([]);
+    expect(
+      habitConfigSchema.safeParse([{ ...gym, excludedWeekdays: [2, 2] }])
+        .success,
+    ).toBe(false);
   });
 
   it("parses form values and preserves open states", () => {
@@ -61,6 +89,23 @@ describe("habit configuration", () => {
     expect(
       getQuickLogValues({ practice: 5 }, habits, "practice"),
     ).toEqual({ practice: 5 });
+  });
+
+  it("prefills measurements from the previous logged value", () => {
+    expect(
+      getQuickLogValues({}, [weight], "weight", { weight: 72.4 }),
+    ).toEqual({
+      weight: 72.4,
+    });
+  });
+
+  it("validates measurement range and increments", () => {
+    expect(parseHabitValues({ weight: "72.4" }, [weight])).toEqual({
+      weight: 72.4,
+    });
+    expect(() =>
+      parseHabitValues({ weight: "72.45" }, [weight]),
+    ).toThrow("0.1 kg increments");
   });
 
   it("merges a focused update without changing other habits", () => {

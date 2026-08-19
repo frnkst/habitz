@@ -6,7 +6,11 @@ import { redirect } from "next/navigation";
 import { requireOwner } from "@/lib/auth";
 import { getAppConfig } from "@/lib/config";
 import { isDateKey, todayInTimeZone } from "@/lib/dates";
-import { mergeHabitValues, parseHabitValues } from "@/lib/habits";
+import {
+  getHabitsForDate,
+  mergeHabitValues,
+  parseHabitValues,
+} from "@/lib/habits";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export type SaveEntryState = {
@@ -53,15 +57,19 @@ export async function saveDailyEntry(
     return { status: "error", message: "Future days cannot be logged." };
   }
 
+  const activeHabits = getHabitsForDate(config.habits, entryDate);
   const submitted: Record<string, FormDataEntryValue | null> = {};
   const quickHabitKey = String(formData.get("quickHabitKey") ?? "");
   const quickHabit = quickHabitKey
-    ? config.habits.find((habit) => habit.key === quickHabitKey)
+    ? activeHabits.find((habit) => habit.key === quickHabitKey)
     : undefined;
   if (quickHabitKey && !quickHabit) {
-    return { status: "error", message: "Choose a valid habit." };
+    return {
+      status: "error",
+      message: "This habit is not available on the selected day.",
+    };
   }
-  const submittedHabits = quickHabit ? [quickHabit] : config.habits;
+  const submittedHabits = quickHabit ? [quickHabit] : activeHabits;
   for (const habit of submittedHabits) {
     submitted[habit.key] = formData.get(habit.key);
   }
