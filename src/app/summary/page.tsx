@@ -2,12 +2,14 @@ import Link from "next/link";
 import { ArrowUpRight, CircleCheck, Timer } from "lucide-react";
 
 import { AppHeader } from "@/components/app-header";
+import { DataUnavailable } from "@/components/data-unavailable";
 import { PeriodNavigation } from "@/components/period-navigation";
 import { ChartLoader } from "@/components/summary/chart-loader";
 import { Separator } from "@/components/ui/separator";
 import { requireOwner } from "@/lib/auth";
 import { getAppConfig } from "@/lib/config";
-import { getEntries } from "@/lib/data";
+import { getEntries, isDataReadError } from "@/lib/data";
+import type { DailyEntry } from "@/lib/database.types";
 import {
   enumerateDates,
   formatPeriodLabel,
@@ -41,7 +43,15 @@ export default async function SummaryPage({
   const range = getPeriodRange(anchor, period, config.weekStart);
   const dates = enumerateDates(range);
   const eligibleDates = dates.filter((date) => date <= today);
-  const entries = await getEntries(user.id, range.start, range.end);
+  let entries: DailyEntry[];
+  try {
+    entries = await getEntries(user.id, range.start, range.end);
+  } catch (error) {
+    if (isDataReadError(error)) {
+      return <DataUnavailable />;
+    }
+    throw error;
+  }
   const summary = summarizeEntries(
     entries,
     config.habits,

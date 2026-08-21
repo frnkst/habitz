@@ -1,10 +1,16 @@
 import { AppHeader } from "@/components/app-header";
+import { DataUnavailable } from "@/components/data-unavailable";
 import { DayDetail } from "@/components/day-detail";
 import { PeriodNavigation } from "@/components/period-navigation";
 import { WeekCalendar } from "@/components/week-calendar";
 import { requireOwner } from "@/lib/auth";
 import { getAppConfig } from "@/lib/config";
-import { getEntries, getPreviousHabitValues } from "@/lib/data";
+import {
+  getEntries,
+  getPreviousHabitValues,
+  isDataReadError,
+} from "@/lib/data";
+import type { DailyEntry } from "@/lib/database.types";
 import {
   enumerateDates,
   formatPeriodLabel,
@@ -14,7 +20,7 @@ import {
   todayInTimeZone,
 } from "@/lib/dates";
 import { getMotivation } from "@/lib/motivation";
-import { getHabitsForDate } from "@/lib/habits";
+import { getHabitsForDate, type HabitValues } from "@/lib/habits";
 
 export const dynamic = "force-dynamic";
 
@@ -35,10 +41,19 @@ export default async function Home({
   const measurementKeys = config.habits
     .filter((habit) => habit.type === "measurement")
     .map((habit) => habit.key);
-  const [entries, previousValues] = await Promise.all([
-    getEntries(user.id, range.start, range.end),
-    getPreviousHabitValues(user.id, anchor, measurementKeys),
-  ]);
+  let entries: DailyEntry[];
+  let previousValues: HabitValues;
+  try {
+    [entries, previousValues] = await Promise.all([
+      getEntries(user.id, range.start, range.end),
+      getPreviousHabitValues(user.id, anchor, measurementKeys),
+    ]);
+  } catch (error) {
+    if (isDataReadError(error)) {
+      return <DataUnavailable />;
+    }
+    throw error;
+  }
   const selectedEntry = entries.find((entry) => entry.entry_date === anchor);
   const previous = shiftPeriod(range.start, "week", -1);
   const next = shiftPeriod(range.start, "week", 1);

@@ -2,7 +2,47 @@ import "server-only";
 
 import type { DailyEntry } from "@/lib/database.types";
 import type { HabitValues } from "@/lib/habits";
+import {
+  isTransientReadError,
+  retryTransientRead,
+  type ReadError,
+} from "@/lib/retry";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
+
+export class DataReadError extends Error {
+  constructor(
+    public readonly operation: string,
+    public readonly details: ReadError,
+  ) {
+    super(`Could not load Habitz data during ${operation}.`);
+    this.name = "DataReadError";
+  }
+}
+
+export function isDataReadError(error: unknown): error is DataReadError {
+  return error instanceof DataReadError;
+}
+
+function logRetry(operation: string, error: ReadError) {
+  console.warn("Retrying transient Habitz data read", {
+    operation,
+    code: error.code,
+    message: error.message,
+  });
+}
+
+function throwReadError(operation: string, error: ReadError): never {
+  console.error("Habitz data read failed", {
+    operation,
+    code: error.code,
+    message: error.message,
+  });
+  if (isTransientReadError(error)) {
+    throw new DataReadError(operation, error);
+  }
+
+  throw new Error(`Unexpected Habitz data error during ${operation}.`);
+}
 
 export async function getEntries(
   userId: string,
@@ -10,16 +50,24 @@ export async function getEntries(
   end: string,
 ): Promise<DailyEntry[]> {
   const supabase = await createServerSupabaseClient();
-  const { data, error } = await supabase
-    .from("daily_entries")
-    .select("*")
-    .eq("user_id", userId)
-    .gte("entry_date", start)
-    .lte("entry_date", end)
-    .order("entry_date");
+  const operation = "period entries";
+  const { data, error } = await retryTransientRead<DailyEntry[]>(
+    () =>
+      supabase
+        .from("daily_entries")
+        .select("*")
+        .eq("user_id", userId)
+        .gte("entry_date", start)
+        .lte("entry_date", end)
+        .order("entry_date"),
+    (readError) => logRetry(operation, readError),
+  );
 
   if (error) {
-    throw new Error(`Could not load habit entries: ${error.message}`);
+    throwReadError(operation, error);
+  }
+  if (!data) {
+    throwReadError(operation, { message: "The database returned no data." });
   }
   return data;
 }
@@ -32,15 +80,25 @@ export async function getPreviousHabitValues(
   if (habitKeys.length === 0) return {};
 
   const supabase = await createServerSupabaseClient();
-  const { data, error } = await supabase
-    .from("daily_entries")
-    .select("habit_values")
-    .eq("user_id", userId)
-    .lt("entry_date", beforeDate)
-    .order("entry_date", { ascending: false });
+  const operation = "previous measurements";
+  const { data, error } = await retryTransientRead<
+    Array<{ habit_values: HabitValues }>
+  >(
+    () =>
+      supabase
+        .from("daily_entries")
+        .select("habit_values")
+        .eq("user_id", userId)
+        .lt("entry_date", beforeDate)
+        .order("entry_date", { ascending: false }),
+    (readError) => logRetry(operation, readError),
+  );
 
   if (error) {
-    throw new Error(`Could not load previous habit values: ${error.message}`);
+    throwReadError(operation, error);
+  }
+  if (!data) {
+    throwReadError(operation, { message: "The database returned no data." });
   }
 
   const previousValues: HabitValues = {};
