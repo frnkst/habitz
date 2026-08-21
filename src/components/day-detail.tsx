@@ -64,14 +64,13 @@ export function DayDetail({
             <h2 className="font-sans text-[1.75rem] font-bold tracking-[-0.05em]">
               {formatDate(date, { day: "numeric", month: "long" })}
             </h2>
-            {editable ? (
+            {editable && quickHabitKey ? (
               <DayLogger
-                key={`${date}-${entry?.updated_at ?? "new"}-${quickHabitKey ?? "full"}`}
+                key={`${date}-${entry?.updated_at ?? "new"}-${quickHabitKey}`}
                 date={date}
                 habits={activeHabits}
                 values={values}
                 previousValues={previousValues}
-                editable={editable}
                 quickHabitKey={quickHabitKey}
               />
             ) : null}

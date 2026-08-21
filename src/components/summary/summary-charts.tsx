@@ -95,101 +95,6 @@ function Chart({
 }
 
 export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
-  const targetBarOption: EChartsCoreOption = {
-    aria: { enabled: true },
-    animationDuration: 900,
-    animationEasing: "cubicOut",
-    grid: { left: 88, right: 22, top: 52, bottom: 36 },
-    legend: {
-      top: 0,
-      data: ["Logged", "Target"],
-      icon: "circle",
-      itemWidth: 9,
-      itemHeight: 9,
-      textStyle: { color: "#6b647d", fontWeight: 600 },
-    },
-    tooltip: {
-      ...tooltipStyle,
-      trigger: "axis",
-      axisPointer: {
-        type: "shadow",
-        shadowStyle: { color: "rgba(112, 85, 214, 0.07)" },
-      },
-    },
-    xAxis: {
-      type: "value",
-      axisLabel: { color: "#9a93aa" },
-      axisLine: { show: false },
-      axisTick: { show: false },
-      splitLine: {
-        lineStyle: { color: "#ebe7f4", type: "dashed", width: 1 },
-      },
-    },
-    yAxis: {
-      type: "category",
-      data: summary.durations.map((item) => item.label),
-      axisLabel: { color: "#554d68", fontWeight: 700 },
-      axisLine: { show: false },
-      axisTick: { show: false },
-    },
-    series: [
-      {
-        name: "Target",
-        type: "bar",
-        data: summary.durations.map((item) => item.targetTotal),
-        barWidth: 24,
-        itemStyle: {
-          color: {
-            type: "linear",
-            x: 1,
-            y: 0,
-            x2: 0,
-            y2: 0,
-            colorStops: [
-              { offset: 0, color: "#ddd5f4" },
-              { offset: 1, color: "#f0ecf8" },
-            ],
-          },
-          borderRadius: 12,
-        },
-        z: 1,
-      },
-      {
-        name: "Logged",
-        type: "bar",
-        data: summary.durations.map((item) => item.total),
-        barWidth: 24,
-        barGap: "-100%",
-        label: {
-          show: true,
-          position: "right",
-          color: "#55418f",
-          fontWeight: 800,
-          fontSize: 11,
-        },
-        itemStyle: {
-          color: {
-            type: "linear",
-            x: 1,
-            y: 0,
-            x2: 0,
-            y2: 0,
-            colorStops: [
-              { offset: 0, color: "#9b86f2" },
-              { offset: 0.55, color: "#7558d8" },
-              { offset: 1, color: "#5840b5" },
-            ],
-          },
-          borderRadius: 12,
-          shadowBlur: 12,
-          shadowColor: "rgba(88, 64, 181, 0.24)",
-          shadowOffsetX: 5,
-        },
-        z: 2,
-      },
-    ],
-  };
-
   const trendBarOption: EChartsCoreOption = {
     aria: { enabled: true },
     animationDuration: 1000,
@@ -266,32 +171,6 @@ export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
 
   return (
     <div className="grid gap-4 lg:grid-cols-2">
-      {summary.durations.length ? (
-        <>
-          <article className="surface-card overflow-hidden rounded-[1.65rem] border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/65 p-4 sm:p-5">
-            <h3 className="font-semibold tracking-[-0.02em]">
-              Target completion
-            </h3>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Logged minutes filling each period target
-            </p>
-            <Chart
-              option={targetBarOption}
-              label="Horizontal bar chart showing logged minutes against target minutes"
-            />
-          </article>
-          <article className="surface-card overflow-hidden rounded-[1.65rem] border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/65 p-4 sm:p-5">
-            <h3 className="font-semibold tracking-[-0.02em]">Progress over time</h3>
-            <p className="mt-1 text-xs text-muted-foreground">
-              Daily or monthly movement by habit
-            </p>
-            <Chart
-              option={trendBarOption}
-              label="Vertical bar chart of habit progress over time"
-            />
-          </article>
-        </>
-      ) : null}
       {summary.measurements.map((measurement) => {
         const option: EChartsCoreOption = {
           aria: { enabled: true },
@@ -510,6 +389,20 @@ export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
           </article>
         );
       })}
+      {summary.durations.length ? (
+        <article className="surface-card overflow-hidden rounded-[1.65rem] border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/65 p-4 sm:p-5 lg:col-span-2">
+          <h3 className="font-semibold tracking-[-0.02em]">
+            Progress over time
+          </h3>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Daily or monthly movement by habit
+          </p>
+          <Chart
+            option={trendBarOption}
+            label="Vertical bar chart of habit progress over time"
+          />
+        </article>
+      ) : null}
     </div>
   );
 }
