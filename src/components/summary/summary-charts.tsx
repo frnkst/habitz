@@ -95,11 +95,11 @@ function Chart({
 }
 
 export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
-  const barOption: EChartsCoreOption = {
+  const targetBarOption: EChartsCoreOption = {
     aria: { enabled: true },
     animationDuration: 900,
     animationEasing: "cubicOut",
-    grid: { left: 42, right: 14, top: 52, bottom: 40 },
+    grid: { left: 88, right: 22, top: 52, bottom: 36 },
     legend: {
       top: 0,
       data: ["Logged", "Target"],
@@ -117,13 +117,6 @@ export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
       },
     },
     xAxis: {
-      type: "category",
-      data: summary.durations.map((item) => item.label),
-      axisLabel: { color: "#6b647d", fontWeight: 600, interval: 0 },
-      axisLine: { show: false },
-      axisTick: { show: false },
-    },
-    yAxis: {
       type: "value",
       axisLabel: { color: "#9a93aa" },
       axisLine: { show: false },
@@ -132,25 +125,32 @@ export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
         lineStyle: { color: "#ebe7f4", type: "dashed", width: 1 },
       },
     },
+    yAxis: {
+      type: "category",
+      data: summary.durations.map((item) => item.label),
+      axisLabel: { color: "#554d68", fontWeight: 700 },
+      axisLine: { show: false },
+      axisTick: { show: false },
+    },
     series: [
       {
         name: "Target",
         type: "bar",
         data: summary.durations.map((item) => item.targetTotal),
-        barMaxWidth: 42,
+        barWidth: 24,
         itemStyle: {
           color: {
             type: "linear",
-            x: 0,
+            x: 1,
             y: 0,
             x2: 0,
-            y2: 1,
+            y2: 0,
             colorStops: [
-              { offset: 0, color: "#e3dcf7" },
-              { offset: 1, color: "#f1edf8" },
+              { offset: 0, color: "#ddd5f4" },
+              { offset: 1, color: "#f0ecf8" },
             ],
           },
-          borderRadius: [12, 12, 4, 4],
+          borderRadius: 12,
         },
         z: 1,
       },
@@ -158,11 +158,11 @@ export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
         name: "Logged",
         type: "bar",
         data: summary.durations.map((item) => item.total),
-        barMaxWidth: 25,
+        barWidth: 24,
         barGap: "-100%",
         label: {
           show: true,
-          position: "top",
+          position: "right",
           color: "#55418f",
           fontWeight: 800,
           fontSize: 11,
@@ -170,27 +170,27 @@ export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
         itemStyle: {
           color: {
             type: "linear",
-            x: 0,
+            x: 1,
             y: 0,
             x2: 0,
-            y2: 1,
+            y2: 0,
             colorStops: [
               { offset: 0, color: "#9b86f2" },
               { offset: 0.55, color: "#7558d8" },
               { offset: 1, color: "#5840b5" },
             ],
           },
-          borderRadius: [12, 12, 4, 4],
+          borderRadius: 12,
           shadowBlur: 12,
           shadowColor: "rgba(88, 64, 181, 0.24)",
-          shadowOffsetY: 5,
+          shadowOffsetX: 5,
         },
         z: 2,
       },
     ],
   };
 
-  const lineOption: EChartsCoreOption = {
+  const trendBarOption: EChartsCoreOption = {
     aria: { enabled: true },
     animationDuration: 1000,
     animationEasing: "cubicOut",
@@ -208,13 +208,12 @@ export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
       ...tooltipStyle,
       trigger: "axis",
       axisPointer: {
-        type: "line",
-        lineStyle: { color: "#b5a7dd", type: "dashed" },
+        type: "shadow",
+        shadowStyle: { color: "rgba(112, 85, 214, 0.07)" },
       },
     },
     xAxis: {
       type: "category",
-      boundaryGap: false,
       data: summary.trends.map((point) => formatTrendLabel(point.label)),
       axisLabel: { color: "#6b647d", fontWeight: 600, hideOverlap: true },
       axisLine: { show: false },
@@ -233,28 +232,10 @@ export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
       const color = lineColors[index % lineColors.length];
       return {
         name: habit.label,
-        type: "line",
-        smooth: 0.42,
-        connectNulls: true,
-        showSymbol: summary.trends.length < 40,
-        symbol: "circle",
-        symbolSize: 8,
+        type: "bar",
+        barMaxWidth: 22,
+        barGap: "18%",
         itemStyle: {
-          color,
-          borderColor: "#fff",
-          borderWidth: 3,
-          shadowBlur: 8,
-          shadowColor: `${color}55`,
-        },
-        lineStyle: {
-          width: 3.5,
-          color,
-          cap: "round",
-          shadowBlur: 10,
-          shadowColor: `${color}38`,
-          shadowOffsetY: 4,
-        },
-        areaStyle: {
           color: {
             type: "linear",
             x: 0,
@@ -262,14 +243,21 @@ export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
             x2: 0,
             y2: 1,
             colorStops: [
-              { offset: 0, color: `${color}35` },
-              { offset: 1, color: `${color}02` },
+              { offset: 0, color: `${color}e8` },
+              { offset: 1, color },
             ],
           },
+          borderRadius: [9, 9, 2, 2],
+          shadowBlur: 9,
+          shadowColor: `${color}3d`,
+          shadowOffsetY: 4,
         },
         emphasis: {
           focus: "series",
-          lineStyle: { width: 4.5 },
+          itemStyle: {
+          shadowBlur: 14,
+          shadowColor: `${color}66`,
+          },
         },
         data: summary.trends.map((point) => point.values[habit.key] ?? 0),
       };
@@ -281,13 +269,15 @@ export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
       {summary.durations.length ? (
         <>
           <article className="surface-card overflow-hidden rounded-[1.65rem] border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/65 p-4 sm:p-5">
-            <h3 className="font-semibold tracking-[-0.02em]">Minutes vs target</h3>
+            <h3 className="font-semibold tracking-[-0.02em]">
+              Target completion
+            </h3>
             <p className="mt-1 text-xs text-muted-foreground">
-              Total progress for the selected period
+              Logged minutes filling each period target
             </p>
             <Chart
-              option={barOption}
-              label="Bar chart comparing logged minutes with target minutes"
+              option={targetBarOption}
+              label="Horizontal bar chart showing logged minutes against target minutes"
             />
           </article>
           <article className="surface-card overflow-hidden rounded-[1.65rem] border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/65 p-4 sm:p-5">
@@ -295,7 +285,10 @@ export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
             <p className="mt-1 text-xs text-muted-foreground">
               Daily or monthly movement by habit
             </p>
-            <Chart option={lineOption} label="Line chart of habit progress over time" />
+            <Chart
+              option={trendBarOption}
+              label="Vertical bar chart of habit progress over time"
+            />
           </article>
         </>
       ) : null}

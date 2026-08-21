@@ -1,11 +1,9 @@
 import Link from "next/link";
-import { ArrowUpRight, CircleCheck, Timer } from "lucide-react";
 
 import { AppHeader } from "@/components/app-header";
 import { DataUnavailable } from "@/components/data-unavailable";
 import { PeriodNavigation } from "@/components/period-navigation";
 import { ChartLoader } from "@/components/summary/chart-loader";
-import { Separator } from "@/components/ui/separator";
 import { requireOwner } from "@/lib/auth";
 import { getAppConfig } from "@/lib/config";
 import { getEntries, isDataReadError } from "@/lib/data";
@@ -122,23 +120,54 @@ export default async function SummaryPage({
         >
           At a glance
         </h2>
-        <div className="grid grid-cols-2 gap-2.5">
-          <article className="relative overflow-hidden rounded-[1.5rem] bg-gradient-to-br from-[#6548c8] to-[#8e72e7] p-4 text-white shadow-xl shadow-violet-950/15">
-            <Timer className="size-5 text-[#f0ebff]" />
-            <p className="mt-5 text-3xl font-bold tracking-[-0.06em]">{totalMinutes}</p>
-            <p className="text-[11px] font-semibold text-white/55">minutes invested</p>
-            <ArrowUpRight className="absolute top-4 right-4 size-4 text-white/35" />
-          </article>
-          <article className="relative overflow-hidden rounded-[1.5rem] bg-gradient-to-br from-[#6548c8] to-[#8e72e7] p-4 text-white shadow-xl shadow-violet-950/15">
-            <CircleCheck className="size-5 text-[#f0ebff]" />
-            <p className="mt-5 text-3xl font-bold tracking-[-0.06em]">{doneChoices}</p>
-            <p className="text-[11px] font-semibold opacity-60">positive choices</p>
-            <ArrowUpRight className="absolute top-4 right-4 size-4 opacity-35" />
-          </article>
+        <div className="relative isolate overflow-hidden border-y border-violet-200/75 py-7 sm:py-10">
+          <div className="absolute top-1/2 left-1/4 -z-10 size-40 -translate-y-1/2 rounded-full bg-violet-300/30 blur-3xl" />
+          <div className="absolute top-1/2 right-1/4 -z-10 size-40 -translate-y-1/2 rounded-full bg-emerald-200/35 blur-3xl" />
+          <div className="grid grid-cols-2">
+            <article className="relative px-2 text-center after:absolute after:top-2 after:right-0 after:h-[calc(100%-1rem)] after:w-px after:bg-gradient-to-b after:from-transparent after:via-violet-300 after:to-transparent sm:px-6">
+              <p className="bg-gradient-to-br from-[#5233bd] via-[#795ae2] to-[#b082e9] bg-clip-text text-5xl font-extrabold tracking-[-0.08em] text-transparent sm:text-7xl">
+                {totalMinutes}
+              </p>
+              <p className="mt-2 text-xs font-extrabold tracking-[0.13em] text-violet-900 uppercase">
+                Minutes invested
+              </p>
+              <p className="mt-1 text-[10px] font-semibold text-muted-foreground sm:text-xs">
+                Focus, movement, and calm
+              </p>
+            </article>
+            <article className="px-2 text-center sm:px-6">
+              <p className="bg-gradient-to-br from-[#187e5a] via-[#28aa79] to-[#79cfb2] bg-clip-text text-5xl font-extrabold tracking-[-0.08em] text-transparent sm:text-7xl">
+                {doneChoices}
+              </p>
+              <p className="mt-2 text-xs font-extrabold tracking-[0.13em] text-emerald-900 uppercase">
+                Positive choices
+              </p>
+              <p className="mt-1 text-[10px] font-semibold text-muted-foreground sm:text-xs">
+                Intentions turned into action
+              </p>
+            </article>
+          </div>
         </div>
-        <Separator className="my-6 bg-violet-200/70" />
+      </section>
+
+      <section className="mt-7" aria-labelledby="visual-summary">
+        <h2
+          id="visual-summary"
+          className="mb-3 text-xl font-bold tracking-[-0.04em]"
+        >
+          Visual summary
+        </h2>
+        <ChartLoader summary={summary} />
+      </section>
+
+      <section className="mt-8" aria-labelledby="habit-totals">
         <div className="mb-3 flex items-end justify-between gap-4">
-          <h3 className="text-base font-bold tracking-[-0.025em]">By habit</h3>
+          <h2
+            id="habit-totals"
+            className="text-xl font-bold tracking-[-0.04em]"
+          >
+            By habit
+          </h2>
           <p className="text-[11px] font-semibold text-muted-foreground">
             Full-period targets
           </p>
@@ -206,16 +235,6 @@ export default async function SummaryPage({
             </article>
           ))}
         </div>
-      </section>
-
-      <section className="mt-7" aria-labelledby="visual-summary">
-        <h2
-          id="visual-summary"
-          className="mb-3 text-xl font-bold tracking-[-0.04em]"
-        >
-          Visual summary
-        </h2>
-        <ChartLoader summary={summary} />
       </section>
     </main>
   );

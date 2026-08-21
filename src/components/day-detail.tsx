@@ -12,7 +12,6 @@ import { ArrowUpRight } from "lucide-react";
 import Link from "next/link";
 
 import { DayLogger } from "./day-logger";
-import { HabitIcon } from "./habit-icon";
 
 const cardStyles = {
   open: "border-violet-100/90 bg-white/75 text-[#746d85]",
@@ -49,8 +48,8 @@ export function DayDetail({
   const counts = getDayCounts(activeHabits, values);
   const completed = counts.done;
   const orderedHabits = [
-    ...activeHabits.filter((habit) => habit.type === "duration"),
     ...activeHabits.filter((habit) => habit.type === "measurement"),
+    ...activeHabits.filter((habit) => habit.type === "duration"),
     ...activeHabits.filter((habit) => habit.type === "boolean"),
   ];
 
@@ -94,16 +93,16 @@ export function DayDetail({
           const card = (
             <article
               className={cn(
-                "relative h-full min-w-0 rounded-[1.35rem] border p-3.5 shadow-[0_8px_25px_rgba(82,61,136,0.05)] transition duration-200",
+                "relative min-h-28 min-w-0 rounded-[1.35rem] border p-3.5 shadow-[0_8px_25px_rgba(82,61,136,0.05)] transition duration-200",
                 editable &&
                   "group-hover:-translate-y-0.5 group-hover:shadow-[0_12px_30px_rgba(82,61,136,0.12)]",
                 cardStyles[status],
               )}
             >
-              <div className="flex items-center justify-between gap-2">
-                <span className="flex size-8 items-center justify-center rounded-xl bg-white/55 shadow-sm">
-                  <HabitIcon habit={habit} className="size-4" />
-                </span>
+              <div className="flex items-start justify-between gap-3">
+                <p className="text-lg leading-tight font-extrabold tracking-[-0.035em]">
+                  {habit.label}
+                </p>
                 <span className="text-[9px] font-bold tracking-[0.12em] uppercase opacity-60">
                   {status}
                 </span>
@@ -111,8 +110,7 @@ export function DayDetail({
               {editable ? (
                 <ArrowUpRight className="absolute right-3.5 bottom-3.5 size-3.5 opacity-35 transition group-hover:translate-x-0.5 group-hover:-translate-y-0.5 group-hover:opacity-70" />
               ) : null}
-              <p className="mt-4 truncate text-sm font-bold">{habit.label}</p>
-              <p className="mt-0.5 text-xs font-medium opacity-70">
+              <p className="mt-3 text-sm font-semibold opacity-70">
                 {displayValue(habit, value)}
               </p>
             </article>
