@@ -24,6 +24,18 @@ export async function updateSession(request: NextRequest) {
     },
   });
 
-  await supabase.auth.getClaims();
+  try {
+    const { error } = await supabase.auth.getClaims();
+    if (error) {
+      console.warn("Supabase session refresh was not available", {
+        code: error.code,
+        message: error.message,
+      });
+    }
+  } catch (error) {
+    console.warn("Supabase session refresh threw an error", {
+      message: error instanceof Error ? error.message : String(error),
+    });
+  }
   return response;
 }

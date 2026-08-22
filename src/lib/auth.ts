@@ -4,6 +4,12 @@ import type { User } from "@supabase/supabase-js";
 import { redirect } from "next/navigation";
 
 import { getAppConfig } from "@/lib/config";
+import {
+  isTransientReadError,
+  retryTransientRead,
+  ServiceUnavailableError,
+  type ReadError,
+} from "@/lib/retry";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 function stringValue(value: unknown): string | null {
@@ -34,10 +40,35 @@ export function isOwner(user: User): boolean {
 
 export async function getAuthorizedUser(): Promise<User | null> {
   const supabase = await createServerSupabaseClient();
-  const {
-    data: { user },
-  } = await supabase.auth.getUser();
+  const operation = "authentication";
+  const { data, error } = await retryTransientRead<{ user: User | null }>(
+    () => supabase.auth.getUser(),
+    (readError: ReadError) => {
+      console.warn("Retrying transient Habitz authentication", {
+        code: readError.code,
+        message: readError.message,
+      });
+    },
+  );
 
+  if (error) {
+    if (isTransientReadError(error)) {
+      console.error("Habitz authentication failed", {
+        code: error.code,
+        message: error.message,
+      });
+      throw new ServiceUnavailableError(operation, error);
+    }
+    if (error.name !== "AuthSessionMissingError") {
+      console.warn("Habitz session is not valid", {
+        code: error.code,
+        message: error.message,
+      });
+    }
+    return null;
+  }
+
+  const user = data?.user ?? null;
   return user && isOwner(user) ? user : null;
 }
 

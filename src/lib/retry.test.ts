@@ -18,7 +18,7 @@ describe("transient data read retries", () => {
     ).toBe(false);
   });
 
-  it("retries a transient failure once", async () => {
+  it("retries transient failures with bounded backoff", async () => {
     vi.useFakeTimers();
     const operation = vi
       .fn()
@@ -66,12 +66,34 @@ describe("transient data read retries", () => {
         data: null,
         error: { code: "PGRST000", message: "connection failed" },
       })
+      .mockResolvedValueOnce({
+        data: null,
+        error: { code: "PGRST001", message: "connection failed again" },
+      })
       .mockResolvedValueOnce(finalResult);
 
     const resultPromise = retryTransientRead(operation, vi.fn());
     await vi.runAllTimersAsync();
 
     await expect(resultPromise).resolves.toEqual(finalResult);
+    expect(operation).toHaveBeenCalledTimes(3);
+    vi.useRealTimers();
+  });
+
+  it("converts thrown network failures into retryable results", async () => {
+    vi.useFakeTimers();
+    const operation = vi
+      .fn()
+      .mockRejectedValueOnce(new TypeError("fetch failed"))
+      .mockResolvedValueOnce({ data: ["recovered"], error: null });
+
+    const resultPromise = retryTransientRead(operation, vi.fn());
+    await vi.runAllTimersAsync();
+
+    await expect(resultPromise).resolves.toEqual({
+      data: ["recovered"],
+      error: null,
+    });
     expect(operation).toHaveBeenCalledTimes(2);
     vi.useRealTimers();
   });

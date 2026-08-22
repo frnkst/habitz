@@ -1,5 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Manrope } from "next/font/google";
+
+import { StandaloneAppRefresh } from "@/components/standalone-app-refresh";
+
 import "./globals.css";
 
 const manrope = Manrope({
@@ -40,7 +43,10 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={`${manrope.variable} h-full antialiased`}
     >
-      <body className="min-h-full">{children}</body>
+      <body className="min-h-full">
+        <StandaloneAppRefresh />
+        {children}
+      </body>
     </html>
   );
 }

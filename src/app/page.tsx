@@ -8,7 +8,6 @@ import { getAppConfig } from "@/lib/config";
 import {
   getEntries,
   getPreviousHabitValues,
-  isDataReadError,
 } from "@/lib/data";
 import type { DailyEntry } from "@/lib/database.types";
 import {
@@ -21,6 +20,7 @@ import {
 } from "@/lib/dates";
 import { getMotivation } from "@/lib/motivation";
 import { getHabitsForDate, type HabitValues } from "@/lib/habits";
+import { isServiceUnavailableError } from "@/lib/retry";
 
 export const dynamic = "force-dynamic";
 
@@ -30,7 +30,15 @@ export default async function Home({
   searchParams: Promise<{ date?: string; quick?: string }>;
 }) {
   const config = getAppConfig();
-  const user = await requireOwner();
+  let user;
+  try {
+    user = await requireOwner();
+  } catch (error) {
+    if (isServiceUnavailableError(error)) {
+      return <DataUnavailable />;
+    }
+    throw error;
+  }
   const today = todayInTimeZone(config.timezone);
   const params = await searchParams;
   const requestedDate = params.date;
@@ -49,7 +57,7 @@ export default async function Home({
       getPreviousHabitValues(user.id, anchor, measurementKeys),
     ]);
   } catch (error) {
-    if (isDataReadError(error)) {
+    if (isServiceUnavailableError(error)) {
       return <DataUnavailable />;
     }
     throw error;

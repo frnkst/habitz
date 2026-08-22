@@ -2,6 +2,7 @@
 
 import dynamic from "next/dynamic";
 
+import { HabitzLoader } from "@/components/habitz-loader";
 import type { PeriodSummary } from "@/lib/scoring";
 
 const SummaryCharts = dynamic(
@@ -9,9 +10,8 @@ const SummaryCharts = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="grid gap-4 lg:grid-cols-2" aria-label="Loading charts">
-        <div className="h-80 animate-pulse rounded-3xl bg-violet-100/65" />
-        <div className="h-80 animate-pulse rounded-3xl bg-violet-100/65" />
+      <div className="glass-panel flex min-h-72 items-center justify-center rounded-[1.65rem]">
+        <HabitzLoader label="Drawing your progress" />
       </div>
     ),
   },

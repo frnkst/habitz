@@ -1,17 +1,17 @@
 import { RotateCw } from "lucide-react";
 
+import { HabitzLoader } from "@/components/habitz-loader";
+
 export function DataUnavailable() {
   return (
     <main className="relative flex min-h-dvh items-center justify-center overflow-hidden px-5">
       <div className="aurora absolute inset-0 -z-10" />
       <section className="glass-panel max-w-md rounded-[2rem] p-7 text-center">
-        <span className="mx-auto flex size-12 items-center justify-center rounded-2xl bg-violet-100 text-violet-700">
-          <RotateCw className="size-6" />
-        </span>
+        <HabitzLoader label="Reconnecting" />
         <p className="eyebrow mt-6 text-violet-700">A brief pause</p>
         <h1 className="mt-2 text-3xl">Your habits could not load</h1>
         <p className="mt-2 text-sm leading-6 text-muted-foreground">
-          The data service did not respond after a retry. Reload the page in a
+          The service did not respond after a few retries. Reload the page in a
           moment.
         </p>
         <a

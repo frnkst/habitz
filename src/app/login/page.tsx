@@ -1,9 +1,11 @@
-import { ArrowRight, GitBranch, Sparkles } from "lucide-react";
+import { Sparkles } from "lucide-react";
 import { redirect } from "next/navigation";
 
 import { signInWithGitHub } from "@/app/actions";
-import { Button } from "@/components/ui/button";
+import { LoginButton } from "@/components/login-button";
+import { DataUnavailable } from "@/components/data-unavailable";
 import { getAuthorizedUser } from "@/lib/auth";
+import { isServiceUnavailableError } from "@/lib/retry";
 
 export const dynamic = "force-dynamic";
 
@@ -12,7 +14,16 @@ export default async function LoginPage({
 }: {
   searchParams: Promise<{ error?: string }>;
 }) {
-  if (await getAuthorizedUser()) {
+  let user;
+  try {
+    user = await getAuthorizedUser();
+  } catch (error) {
+    if (isServiceUnavailableError(error)) {
+      return <DataUnavailable />;
+    }
+    throw error;
+  }
+  if (user) {
     redirect("/");
   }
   const { error } = await searchParams;
@@ -49,11 +60,7 @@ export default async function LoginPage({
           </p>
         ) : null}
         <form action={signInWithGitHub} className="mt-9">
-          <Button className="h-14 w-full rounded-2xl bg-gradient-to-br from-[#7457d9] to-[#8e72e7] px-5 text-base text-white shadow-xl shadow-violet-950/20 hover:from-[#684bcf] hover:to-[#8265df]" type="submit">
-            <GitBranch className="size-5" aria-hidden="true" />
-            Continue with GitHub
-            <ArrowRight className="ml-auto size-4 text-[#f0ebff]" />
-          </Button>
+          <LoginButton />
         </form>
       </section>
     </main>

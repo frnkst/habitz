@@ -6,7 +6,7 @@ import { PeriodNavigation } from "@/components/period-navigation";
 import { ChartLoader } from "@/components/summary/chart-loader";
 import { requireOwner } from "@/lib/auth";
 import { getAppConfig } from "@/lib/config";
-import { getEntries, isDataReadError } from "@/lib/data";
+import { getEntries } from "@/lib/data";
 import type { DailyEntry } from "@/lib/database.types";
 import {
   enumerateDates,
@@ -20,6 +20,7 @@ import {
 import { summarizeEntries } from "@/lib/scoring";
 import { cn } from "@/lib/utils";
 import { getMotivation } from "@/lib/motivation";
+import { isServiceUnavailableError } from "@/lib/retry";
 
 export const dynamic = "force-dynamic";
 
@@ -34,7 +35,15 @@ export default async function SummaryPage({
 }) {
   const params = await searchParams;
   const config = getAppConfig();
-  const user = await requireOwner();
+  let user;
+  try {
+    user = await requireOwner();
+  } catch (error) {
+    if (isServiceUnavailableError(error)) {
+      return <DataUnavailable />;
+    }
+    throw error;
+  }
   const today = todayInTimeZone(config.timezone);
   const period = isPeriod(params.period) ? params.period : "week";
   const anchor = params.date && isDateKey(params.date) ? params.date : today;
@@ -45,7 +54,7 @@ export default async function SummaryPage({
   try {
     entries = await getEntries(user.id, range.start, range.end);
   } catch (error) {
-    if (isDataReadError(error)) {
+    if (isServiceUnavailableError(error)) {
       return <DataUnavailable />;
     }
     throw error;

@@ -10,7 +10,12 @@ import {
   getHabitsForDate,
   mergeHabitValues,
   parseHabitValues,
+  type HabitValues,
 } from "@/lib/habits";
+import {
+  isServiceUnavailableError,
+  retryTransientRead,
+} from "@/lib/retry";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
 export type SaveEntryState = {
@@ -47,7 +52,18 @@ export async function saveDailyEntry(
   formData: FormData,
 ): Promise<SaveEntryState> {
   const config = getAppConfig();
-  const user = await requireOwner();
+  let user;
+  try {
+    user = await requireOwner();
+  } catch (error) {
+    if (isServiceUnavailableError(error)) {
+      return {
+        status: "error",
+        message: "Habitz could not connect. Please try saving again.",
+      };
+    }
+    throw error;
+  }
   const entryDate = String(formData.get("entryDate") ?? "");
 
   if (!isDateKey(entryDate)) {
@@ -86,12 +102,21 @@ export async function saveDailyEntry(
 
   const supabase = await createServerSupabaseClient();
   if (quickHabit) {
-    const { data: existingEntry, error: readError } = await supabase
-      .from("daily_entries")
-      .select("habit_values")
-      .eq("user_id", user.id)
-      .eq("entry_date", entryDate)
-      .maybeSingle();
+    const { data: existingEntry, error: readError } =
+      await retryTransientRead<{ habit_values: HabitValues }>(
+        () =>
+          supabase
+            .from("daily_entries")
+            .select("habit_values")
+            .eq("user_id", user.id)
+            .eq("entry_date", entryDate)
+            .maybeSingle(),
+        (error) =>
+          console.warn("Retrying daily entry read before save", {
+            code: error.code,
+            message: error.message,
+          }),
+      );
     if (readError) {
       return {
         status: "error",
@@ -103,13 +128,21 @@ export async function saveDailyEntry(
       habitValues,
     );
   }
-  const { error } = await supabase.from("daily_entries").upsert(
-    {
-      user_id: user.id,
-      entry_date: entryDate,
-      habit_values: habitValues,
-    },
-    { onConflict: "user_id,entry_date" },
+  const { error } = await retryTransientRead<null>(
+    () =>
+      supabase.from("daily_entries").upsert(
+        {
+          user_id: user.id,
+          entry_date: entryDate,
+          habit_values: habitValues,
+        },
+        { onConflict: "user_id,entry_date" },
+      ),
+    (readError) =>
+      console.warn("Retrying daily entry save", {
+        code: readError.code,
+        message: readError.message,
+      }),
   );
 
   if (error) {

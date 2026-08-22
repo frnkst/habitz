@@ -6,21 +6,18 @@ import {
   isTransientReadError,
   retryTransientRead,
   type ReadError,
+  ServiceUnavailableError,
 } from "@/lib/retry";
 import { createServerSupabaseClient } from "@/lib/supabase/server";
 
-export class DataReadError extends Error {
+export class DataReadError extends ServiceUnavailableError {
   constructor(
     public readonly operation: string,
     public readonly details: ReadError,
   ) {
-    super(`Could not load Habitz data during ${operation}.`);
+    super(operation, details);
     this.name = "DataReadError";
   }
-}
-
-export function isDataReadError(error: unknown): error is DataReadError {
-  return error instanceof DataReadError;
 }
 
 function logRetry(operation: string, error: ReadError) {

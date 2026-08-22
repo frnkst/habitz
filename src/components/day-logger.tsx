@@ -7,6 +7,7 @@ import {
   saveDailyEntry,
   type SaveEntryState,
 } from "@/app/actions";
+import { HabitzLoader } from "@/components/habitz-loader";
 import { HabitIcon } from "@/components/habit-icon";
 import { Button } from "@/components/ui/button";
 import {
@@ -71,6 +72,11 @@ export function DayLogger({
           <input type="hidden" name="entryDate" value={date} />
           {quickHabit ? (
             <input type="hidden" name="quickHabitKey" value={quickHabit.key} />
+          ) : null}
+          {pending ? (
+            <div className="mx-4 rounded-2xl border border-violet-100 bg-white/75 px-4 py-3 sm:mx-5">
+              <HabitzLoader compact label={`Saving ${quickHabit?.label ?? "habit"}`} />
+            </div>
           ) : null}
           <div className="space-y-3 overflow-y-auto px-4 py-5 pb-7 sm:px-5">
             {visibleHabits.map((habit) => {
