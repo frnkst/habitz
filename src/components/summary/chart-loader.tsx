@@ -34,16 +34,11 @@ export function ChartLoader({ summary }: { summary: PeriodSummary }) {
 }
 
 export function InvestmentChartLoader({
-  totalMinutes,
-  positiveChoices,
+  summary,
+  period,
 }: {
-  totalMinutes: number;
-  positiveChoices: number;
+  summary: PeriodSummary;
+  period: "week" | "month" | "year";
 }) {
-  return (
-    <InvestmentChart
-      totalMinutes={totalMinutes}
-      positiveChoices={positiveChoices}
-    />
-  );
+  return <InvestmentChart points={summary.investments} period={period} />;
 }

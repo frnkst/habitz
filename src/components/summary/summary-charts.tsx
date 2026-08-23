@@ -16,8 +16,8 @@ import {
 } from "echarts/core";
 import { CanvasRenderer } from "echarts/renderers";
 
-import type { PeriodSummary } from "@/lib/scoring";
-import { formatTrendLabel } from "@/lib/dates";
+import type { InvestmentPoint, PeriodSummary } from "@/lib/scoring";
+import { formatDate, formatTrendLabel } from "@/lib/dates";
 
 registerECharts([
   AriaComponent,
@@ -408,17 +408,34 @@ export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
 }
 
 export function InvestmentChart({
-  totalMinutes,
-  positiveChoices,
+  points,
+  period,
 }: {
-  totalMinutes: number;
-  positiveChoices: number;
+  points: InvestmentPoint[];
+  period: "week" | "month" | "year";
 }) {
+  const labels = points.map((point) => {
+    if (period === "week") {
+      return formatDate(point.label, { weekday: "short" });
+    }
+    if (period === "year") {
+      return formatDate(`${point.label}-01`, { month: "short" });
+    }
+    return point.label.replace("Week ", "W");
+  });
   const option: EChartsCoreOption = {
     aria: { enabled: true },
     animationDuration: 900,
     animationEasing: "cubicOut",
-    grid: { left: 14, right: 18, top: 24, bottom: 54, containLabel: true },
+    grid: { left: 6, right: 6, top: 54, bottom: 36, containLabel: true },
+    legend: {
+      top: 0,
+      data: ["Minutes", "Positive choices"],
+      icon: "circle",
+      itemWidth: 9,
+      itemHeight: 9,
+      textStyle: { color: "#6b647d", fontWeight: 600 },
+    },
     tooltip: {
       ...tooltipStyle,
       trigger: "axis",
@@ -429,76 +446,86 @@ export function InvestmentChart({
     },
     xAxis: {
       type: "category",
-      data: ["Total invested\nminutes", "Positive\nchoices"],
+      data: labels,
       axisLabel: {
         color: "#5f576f",
         fontWeight: 700,
-        fontSize: 11,
-        lineHeight: 15,
+        fontSize: period === "year" ? 10 : 11,
         interval: 0,
       },
       axisLine: { show: false },
       axisTick: { show: false },
     },
-    yAxis: {
-      type: "value",
-      axisLabel: { color: "#9a93aa" },
-      axisLine: { show: false },
-      axisTick: { show: false },
-      splitLine: {
-        lineStyle: { color: "#ebe7f4", type: "dashed", width: 1 },
+    yAxis: [
+      {
+        type: "value",
+        name: "min",
+        nameTextStyle: { color: "#8b80a0", fontWeight: 700 },
+        axisLabel: { color: "#9a93aa" },
+        axisLine: { show: false },
+        axisTick: { show: false },
+        splitLine: {
+          lineStyle: { color: "#ebe7f4", type: "dashed", width: 1 },
+        },
       },
-    },
+      {
+        type: "value",
+        name: "choices",
+        minInterval: 1,
+        nameTextStyle: { color: "#5c927d", fontWeight: 700 },
+        axisLabel: { color: "#7aa993" },
+        axisLine: { show: false },
+        axisTick: { show: false },
+        splitLine: { show: false },
+      },
+    ],
     series: [
       {
+        name: "Minutes",
         type: "bar",
-        barMaxWidth: 72,
-        data: [
-          {
-            value: totalMinutes,
-            itemStyle: {
-              color: {
-                type: "linear",
-                x: 0,
-                y: 0,
-                x2: 0,
-                y2: 1,
-                colorStops: [
-                  { offset: 0, color: "#a98cf2" },
-                  { offset: 1, color: "#6648c8" },
-                ],
-              },
-            },
-          },
-          {
-            value: positiveChoices,
-            itemStyle: {
-              color: {
-                type: "linear",
-                x: 0,
-                y: 0,
-                x2: 0,
-                y2: 1,
-                colorStops: [
-                  { offset: 0, color: "#8addc1" },
-                  { offset: 1, color: "#18a56c" },
-                ],
-              },
-            },
-          },
-        ],
-        label: {
-          show: true,
-          position: "top",
-          color: "#45385f",
-          fontSize: 14,
-          fontWeight: 800,
-        },
+        yAxisIndex: 0,
+        barMaxWidth: 30,
+        data: points.map((point) => point.minutes),
         itemStyle: {
-          borderRadius: [16, 16, 4, 4],
-          shadowBlur: 14,
-          shadowColor: "rgba(82, 61, 136, 0.2)",
-          shadowOffsetY: 6,
+          color: {
+            type: "linear",
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              { offset: 0, color: "#a98cf2" },
+              { offset: 1, color: "#6648c8" },
+            ],
+          },
+          borderRadius: [9, 9, 2, 2],
+          shadowBlur: 9,
+          shadowColor: "rgba(102, 72, 200, 0.22)",
+          shadowOffsetY: 4,
+        },
+      },
+      {
+        name: "Positive choices",
+        type: "bar",
+        yAxisIndex: 1,
+        barMaxWidth: 30,
+        data: points.map((point) => point.choices),
+        itemStyle: {
+          color: {
+            type: "linear",
+            x: 0,
+            y: 0,
+            x2: 0,
+            y2: 1,
+            colorStops: [
+              { offset: 0, color: "#8addc1" },
+              { offset: 1, color: "#18a56c" },
+            ],
+          },
+          borderRadius: [9, 9, 2, 2],
+          shadowBlur: 9,
+          shadowColor: "rgba(24, 165, 108, 0.2)",
+          shadowOffsetY: 4,
         },
       },
     ],
@@ -507,7 +534,7 @@ export function InvestmentChart({
   return (
     <Chart
       option={option}
-      label={`Bar chart showing ${totalMinutes} total invested minutes and ${positiveChoices} positive choices`}
+      label={`Bar chart showing minutes and positive choices ${period === "week" ? "per day" : period === "month" ? "per week" : "per month"}`}
       className="h-64 sm:h-72"
     />
   );

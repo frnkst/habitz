@@ -77,6 +77,57 @@ describe("habit scoring", () => {
       missed: 1,
       open: 1,
     });
+    expect(summary.investments).toEqual([
+      { label: "2026-08-17", minutes: 20, choices: 1 },
+      { label: "2026-08-18", minutes: 5, choices: 0 },
+      { label: "2026-08-19", minutes: 0, choices: 0 },
+    ]);
+  });
+
+  it("groups monthly investment data by calendar week", () => {
+    const dates = [
+      "2026-08-30",
+      "2026-08-31",
+      "2026-09-01",
+      "2026-09-06",
+      "2026-09-07",
+    ];
+    const summary = summarizeEntries(
+      [
+        entry("2026-08-31", { practice: 15, "daily-choice": true }),
+        entry("2026-09-01", { practice: 10, "daily-choice": true }),
+        entry("2026-09-07", { practice: 20, "daily-choice": false }),
+      ],
+      habits,
+      dates,
+      dates,
+      "month",
+    );
+
+    expect(summary.investments).toEqual([
+      { label: "Week 35", minutes: 0, choices: 0 },
+      { label: "Week 36", minutes: 25, choices: 2 },
+      { label: "Week 37", minutes: 20, choices: 0 },
+    ]);
+  });
+
+  it("groups yearly investment data by month", () => {
+    const dates = ["2026-01-31", "2026-02-01", "2026-02-02"];
+    const summary = summarizeEntries(
+      [
+        entry("2026-01-31", { practice: 15, "daily-choice": true }),
+        entry("2026-02-01", { practice: 5, "daily-choice": true }),
+      ],
+      habits,
+      dates,
+      dates,
+      "year",
+    );
+
+    expect(summary.investments).toEqual([
+      { label: "2026-01", minutes: 15, choices: 1 },
+      { label: "2026-02", minutes: 5, choices: 1 },
+    ]);
   });
 
   it("does not include entries outside the eligible dates", () => {

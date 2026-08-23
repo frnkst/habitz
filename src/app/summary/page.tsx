@@ -165,12 +165,13 @@ export default async function SummaryPage({
             Your investment
           </h3>
           <p className="mt-1 text-xs text-muted-foreground">
-            Time invested and positive choices this period
+            {period === "week"
+              ? "Minutes and choices per day"
+              : period === "month"
+                ? "Minutes and choices per week"
+                : "Minutes and choices per month"}
           </p>
-          <InvestmentChartLoader
-            totalMinutes={totalMinutes}
-            positiveChoices={doneChoices}
-          />
+          <InvestmentChartLoader summary={summary} period={period} />
         </article>
       </section>
 

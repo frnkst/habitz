@@ -5,6 +5,7 @@ import type {
   HabitValues,
 } from "@/lib/habits";
 import { isHabitActiveOnDate } from "@/lib/habits";
+import { formatPeriodLabel, getPeriodRange } from "@/lib/dates";
 
 export type HabitStatus = "open" | "missed" | "done";
 
@@ -88,10 +89,17 @@ export type TrendPoint = {
   values: Record<string, number>;
 };
 
+export type InvestmentPoint = {
+  label: string;
+  minutes: number;
+  choices: number;
+};
+
 export type PeriodSummary = {
   durations: DurationSummary[];
   booleans: BooleanSummary[];
   measurements: MeasurementSummary[];
+  investments: InvestmentPoint[];
   trends: TrendPoint[];
 };
 
@@ -165,28 +173,48 @@ export function summarizeEntries(
     });
 
   const grouped = new Map<string, Record<string, number>>();
+  const investmentGroups = new Map<string, InvestmentPoint>();
   for (const date of eligibleDates) {
     const group = period === "year" ? date.slice(0, 7) : date;
     const values = grouped.get(group) ?? {};
     const entry = entryByDate.get(date);
+    const investmentGroup =
+      period === "week"
+        ? date
+        : period === "month"
+          ? getPeriodRange(date, "week", 1).start
+          : date.slice(0, 7);
+    const investment = investmentGroups.get(investmentGroup) ?? {
+      label:
+        period === "month"
+          ? formatPeriodLabel(
+              getPeriodRange(investmentGroup, "week", 1),
+              "week",
+            )
+          : investmentGroup,
+      minutes: 0,
+      choices: 0,
+    };
     for (const habit of habits) {
-      if (
-        habit.type !== "duration" ||
-        !isHabitActiveOnDate(habit, date)
-      ) {
-        continue;
-      }
+      if (!isHabitActiveOnDate(habit, date)) continue;
       const value = entry?.habit_values[habit.key];
-      values[habit.key] =
-        (values[habit.key] ?? 0) + (typeof value === "number" ? value : 0);
+      if (habit.type === "duration") {
+        const minutes = typeof value === "number" ? value : 0;
+        values[habit.key] = (values[habit.key] ?? 0) + minutes;
+        investment.minutes += minutes;
+      } else if (habit.type === "boolean" && value === true) {
+        investment.choices += 1;
+      }
     }
     grouped.set(group, values);
+    investmentGroups.set(investmentGroup, investment);
   }
 
   return {
     durations,
     booleans,
     measurements,
+    investments: Array.from(investmentGroups.values()),
     trends: Array.from(grouped, ([label, values]) => ({ label, values })),
   };
 }
