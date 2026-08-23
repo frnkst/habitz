@@ -87,6 +87,7 @@ export function isHabitActiveOnDate(
   habit: HabitDefinition,
   dateKey: string,
 ): boolean {
+  if (habit.key === "gym") return true;
   return !habit.excludedWeekdays?.includes(getWeekday(dateKey));
 }
 

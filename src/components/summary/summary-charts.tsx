@@ -406,3 +406,109 @@ export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
     </div>
   );
 }
+
+export function InvestmentChart({
+  totalMinutes,
+  positiveChoices,
+}: {
+  totalMinutes: number;
+  positiveChoices: number;
+}) {
+  const option: EChartsCoreOption = {
+    aria: { enabled: true },
+    animationDuration: 900,
+    animationEasing: "cubicOut",
+    grid: { left: 14, right: 18, top: 24, bottom: 54, containLabel: true },
+    tooltip: {
+      ...tooltipStyle,
+      trigger: "axis",
+      axisPointer: {
+        type: "shadow",
+        shadowStyle: { color: "rgba(112, 85, 214, 0.07)" },
+      },
+    },
+    xAxis: {
+      type: "category",
+      data: ["Total invested\nminutes", "Positive\nchoices"],
+      axisLabel: {
+        color: "#5f576f",
+        fontWeight: 700,
+        fontSize: 11,
+        lineHeight: 15,
+        interval: 0,
+      },
+      axisLine: { show: false },
+      axisTick: { show: false },
+    },
+    yAxis: {
+      type: "value",
+      axisLabel: { color: "#9a93aa" },
+      axisLine: { show: false },
+      axisTick: { show: false },
+      splitLine: {
+        lineStyle: { color: "#ebe7f4", type: "dashed", width: 1 },
+      },
+    },
+    series: [
+      {
+        type: "bar",
+        barMaxWidth: 72,
+        data: [
+          {
+            value: totalMinutes,
+            itemStyle: {
+              color: {
+                type: "linear",
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [
+                  { offset: 0, color: "#a98cf2" },
+                  { offset: 1, color: "#6648c8" },
+                ],
+              },
+            },
+          },
+          {
+            value: positiveChoices,
+            itemStyle: {
+              color: {
+                type: "linear",
+                x: 0,
+                y: 0,
+                x2: 0,
+                y2: 1,
+                colorStops: [
+                  { offset: 0, color: "#8addc1" },
+                  { offset: 1, color: "#18a56c" },
+                ],
+              },
+            },
+          },
+        ],
+        label: {
+          show: true,
+          position: "top",
+          color: "#45385f",
+          fontSize: 14,
+          fontWeight: 800,
+        },
+        itemStyle: {
+          borderRadius: [16, 16, 4, 4],
+          shadowBlur: 14,
+          shadowColor: "rgba(82, 61, 136, 0.2)",
+          shadowOffsetY: 6,
+        },
+      },
+    ],
+  };
+
+  return (
+    <Chart
+      option={option}
+      label={`Bar chart showing ${totalMinutes} total invested minutes and ${positiveChoices} positive choices`}
+      className="h-64 sm:h-72"
+    />
+  );
+}

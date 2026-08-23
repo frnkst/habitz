@@ -3,7 +3,10 @@ import Link from "next/link";
 import { AppHeader } from "@/components/app-header";
 import { DataUnavailable } from "@/components/data-unavailable";
 import { PeriodNavigation } from "@/components/period-navigation";
-import { ChartLoader } from "@/components/summary/chart-loader";
+import {
+  ChartLoader,
+  InvestmentChartLoader,
+} from "@/components/summary/chart-loader";
 import { requireOwner } from "@/lib/auth";
 import { getAppConfig } from "@/lib/config";
 import { getEntries } from "@/lib/data";
@@ -157,6 +160,18 @@ export default async function SummaryPage({
             </article>
           </div>
         </div>
+        <article className="surface-card mt-5 overflow-hidden rounded-[1.65rem] border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/65 p-4 sm:p-5">
+          <h3 className="font-semibold tracking-[-0.02em]">
+            Your investment
+          </h3>
+          <p className="mt-1 text-xs text-muted-foreground">
+            Time invested and positive choices this period
+          </p>
+          <InvestmentChartLoader
+            totalMinutes={totalMinutes}
+            positiveChoices={doneChoices}
+          />
+        </article>
       </section>
 
       <section className="mt-7" aria-labelledby="visual-summary">

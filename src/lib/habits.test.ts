@@ -44,7 +44,7 @@ describe("habit configuration", () => {
     );
   });
 
-  it("validates and applies weekday exclusions", () => {
+  it("keeps Gym active every day despite stale exclusions", () => {
     const gym: HabitDefinition = {
       key: "gym",
       label: "Gym",
@@ -54,7 +54,7 @@ describe("habit configuration", () => {
     };
 
     expect(getHabitsForDate([gym], "2026-08-17")).toEqual([gym]);
-    expect(getHabitsForDate([gym], "2026-08-18")).toEqual([]);
+    expect(getHabitsForDate([gym], "2026-08-18")).toEqual([gym]);
     expect(
       habitConfigSchema.safeParse([{ ...gym, excludedWeekdays: [2, 2] }])
         .success,

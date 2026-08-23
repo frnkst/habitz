@@ -17,6 +17,33 @@ const SummaryCharts = dynamic(
   },
 );
 
+const InvestmentChart = dynamic(
+  () => import("./summary-charts").then((module) => module.InvestmentChart),
+  {
+    ssr: false,
+    loading: () => (
+      <div className="flex min-h-64 items-center justify-center">
+        <HabitzLoader label="Drawing your overview" />
+      </div>
+    ),
+  },
+);
+
 export function ChartLoader({ summary }: { summary: PeriodSummary }) {
   return <SummaryCharts summary={summary} />;
+}
+
+export function InvestmentChartLoader({
+  totalMinutes,
+  positiveChoices,
+}: {
+  totalMinutes: number;
+  positiveChoices: number;
+}) {
+  return (
+    <InvestmentChart
+      totalMinutes={totalMinutes}
+      positiveChoices={positiveChoices}
+    />
+  );
 }

@@ -121,7 +121,7 @@ describe("habit scoring", () => {
     });
   });
 
-  it("excludes rest days from boolean totals and denominators", () => {
+  it("counts Gym on every weekday despite stale exclusions", () => {
     const gym: HabitDefinition = {
       key: "gym",
       label: "Gym",
@@ -145,7 +145,7 @@ describe("habit scoring", () => {
       key: "gym",
       label: "Gym",
       done: 1,
-      missed: 0,
+      missed: 1,
       open: 1,
     });
   });
