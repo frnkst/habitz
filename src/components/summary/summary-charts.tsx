@@ -30,7 +30,6 @@ registerECharts([
   TooltipComponent,
 ]);
 
-const lineColors = ["#7055d6", "#e66f8a", "#569fd8"];
 const tooltipStyle = {
   backgroundColor: "rgba(35, 25, 68, 0.94)",
   borderWidth: 0,
@@ -95,80 +94,6 @@ function Chart({
 }
 
 export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
-  const trendBarOption: EChartsCoreOption = {
-    aria: { enabled: true },
-    animationDuration: 1000,
-    animationEasing: "cubicOut",
-    color: lineColors,
-    grid: { left: 42, right: 18, top: 52, bottom: 40 },
-    legend: {
-      top: 0,
-      type: "scroll",
-      icon: "circle",
-      itemWidth: 9,
-      itemHeight: 9,
-      textStyle: { color: "#6b647d", fontWeight: 600 },
-    },
-    tooltip: {
-      ...tooltipStyle,
-      trigger: "axis",
-      axisPointer: {
-        type: "shadow",
-        shadowStyle: { color: "rgba(112, 85, 214, 0.07)" },
-      },
-    },
-    xAxis: {
-      type: "category",
-      data: summary.trends.map((point) => formatTrendLabel(point.label)),
-      axisLabel: { color: "#6b647d", fontWeight: 600, hideOverlap: true },
-      axisLine: { show: false },
-      axisTick: { show: false },
-    },
-    yAxis: {
-      type: "value",
-      axisLabel: { color: "#9a93aa" },
-      axisLine: { show: false },
-      axisTick: { show: false },
-      splitLine: {
-        lineStyle: { color: "#ebe7f4", type: "dashed", width: 1 },
-      },
-    },
-    series: summary.durations.map((habit, index) => {
-      const color = lineColors[index % lineColors.length];
-      return {
-        name: habit.label,
-        type: "bar",
-        barMaxWidth: 22,
-        barGap: "18%",
-        itemStyle: {
-          color: {
-            type: "linear",
-            x: 0,
-            y: 0,
-            x2: 0,
-            y2: 1,
-            colorStops: [
-              { offset: 0, color: `${color}e8` },
-              { offset: 1, color },
-            ],
-          },
-          borderRadius: [9, 9, 2, 2],
-          shadowBlur: 9,
-          shadowColor: `${color}3d`,
-          shadowOffsetY: 4,
-        },
-        emphasis: {
-          focus: "series",
-          itemStyle: {
-          shadowBlur: 14,
-          shadowColor: `${color}66`,
-          },
-        },
-        data: summary.trends.map((point) => point.values[habit.key] ?? 0),
-      };
-    }),
-  };
-
   return (
     <div className="grid gap-4 lg:grid-cols-2">
       {summary.measurements.map((measurement) => {
@@ -389,20 +314,6 @@ export function SummaryCharts({ summary }: { summary: PeriodSummary }) {
           </article>
         );
       })}
-      {summary.durations.length ? (
-        <article className="surface-card overflow-hidden rounded-[1.65rem] border-violet-100/80 bg-gradient-to-br from-white/90 to-violet-50/65 p-4 sm:p-5 lg:col-span-2">
-          <h3 className="font-semibold tracking-[-0.02em]">
-            Progress over time
-          </h3>
-          <p className="mt-1 text-xs text-muted-foreground">
-            Daily or monthly movement by habit
-          </p>
-          <Chart
-            option={trendBarOption}
-            label="Vertical bar chart of habit progress over time"
-          />
-        </article>
-      ) : null}
     </div>
   );
 }

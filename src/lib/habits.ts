@@ -122,12 +122,12 @@ export function getQuickLogValues(
   if (!habit) {
     return initialValues;
   }
-  if (habit.type === "measurement") {
+  if (habit.type !== "duration") {
     return initialValues;
   }
   return {
     ...initialValues,
-    [habitKey]: habit.type === "duration" ? habit.target : true,
+    [habitKey]: habit.target,
   };
 }
 

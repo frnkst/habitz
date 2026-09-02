@@ -76,13 +76,11 @@ describe("habit configuration", () => {
     ).toThrow("Practice");
   });
 
-  it("prefills open habits for two-tap logging", () => {
+  it("prefills open durations but leaves booleans neutral", () => {
     expect(getQuickLogValues({}, habits, "practice")).toEqual({
       practice: 15,
     });
-    expect(getQuickLogValues({}, habits, "choice")).toEqual({
-      choice: true,
-    });
+    expect(getQuickLogValues({}, habits, "choice")).toEqual({});
   });
 
   it("preserves an existing value when quick logging", () => {

@@ -210,7 +210,7 @@ export function DayLogger({
                         name={habit.key}
                         value=""
                         disabled={pending}
-                        variant={value == null ? "secondary" : "ghost"}
+                        variant={value == null ? "outline" : "ghost"}
                         className="h-11 rounded-lg border-0 shadow-none"
                         onClick={() => setValue(habit.key, null)}
                       >

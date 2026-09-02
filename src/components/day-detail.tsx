@@ -80,11 +80,6 @@ export function DayDetail({
           {completed}/{activeHabits.length} complete
         </Badge>
       </div>
-      {editable ? (
-        <p className="mb-3 text-[11px] font-semibold text-muted-foreground">
-          Tap a habit to prefill its goal, then save.
-        </p>
-      ) : null}
       <div className="grid grid-cols-2 gap-2 sm:grid-cols-3">
         {orderedHabits.map((habit) => {
           const value = values[habit.key];

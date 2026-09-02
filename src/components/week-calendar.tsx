@@ -99,9 +99,9 @@ export function WeekCalendar({
       })}
       <div className="col-span-7 mt-3 flex flex-wrap justify-center gap-x-3 gap-y-1 text-[10px] font-medium text-muted-foreground sm:gap-x-4 sm:text-[11px]">
         {Object.entries({
-          open: "Open",
-          missed: "Missed",
           done: "Done",
+          missed: "Missed",
+          open: "Open",
         }).map(([state, label]) => (
           <span key={state} className="flex items-center gap-1.5">
             <span
